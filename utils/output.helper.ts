@@ -1,11 +1,6 @@
-import {fromWei, walletNames} from '@config';
-import {FiStruct} from '@contractTypes/contracts/interfaces/IYieldGem';
 import chalk from 'chalk';
-import {BigNumber, BigNumberish, ethers} from 'ethers';
-import {DeployResult} from 'hardhat-deploy/dist/types';
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import _ from 'lodash';
-import moment from 'moment';
+import { DeployResult } from 'hardhat-deploy/dist/types';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 type MutableObject<T> = { -readonly [P in keyof T]: T[P] };
 
@@ -29,4 +24,9 @@ export const deploySuccess = (message: string) => deployLogger(chalk.green(messa
 
 export const networkInfo = async (hre: HardhatRuntimeEnvironment, display: (message: string) => void) =>
   !process.env.HIDE_SHOW_NETWORK &&
-  display(`Network:  ${await chainName(hre)} (${hre.network.live ? chalk.red('live!') : chalk.yellow('local')})\n`);
+  display(`Network:  (${hre.network.live ? chalk.red('live!') : chalk.yellow('local')})\n`);
+
+export const displayDeployResult = (name: string, result: DeployResult) =>
+  !result.newlyDeployed
+    ? deployWarning(`Re-used existing ${name} at ${result.address}`)
+    : deploySuccess(`${name} deployed at ${result.address}`);
