@@ -2,30 +2,30 @@ import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-waffle';
 import '@typechain/hardhat';
-import {config as dotenvConfig} from 'dotenv';
+import { config as dotenvConfig } from 'dotenv';
 import 'hardhat-abi-exporter';
 import 'hardhat-contract-sizer';
 import 'hardhat-deploy';
 import 'hardhat-erc1820';
 import 'hardhat-gas-reporter';
 import 'hardhat-log-remover';
-import {HardhatUserConfig} from 'hardhat/config';
-import {resolve} from 'path';
+import { HardhatUserConfig } from 'hardhat/config';
+import { HardhatNetworkAccountsUserConfig } from 'hardhat/types';
+import { resolve } from 'path';
 import 'solidity-coverage';
 import 'solidity-docgen';
 import 'tsconfig-paths/register';
 
 import * as tasks from './tasks';
-import {HardhatNetworkAccountsUserConfig} from 'hardhat/types';
 
-dotenvConfig({path: resolve(__dirname, './.env')});
+dotenvConfig({ path: resolve(__dirname, './.env') });
 export const mainnetJsonRPCUrl: string = process.env.MAINNET_RPC_URL || 'https://bsc-dataseed1.ninicoin.io/';
-export const testnetJsonRPCUrl: string = process.env.TESTNET_RPC_URL || 'https://data-seed-prebsc-1-s1.binance.org:8545/';
+export const testnetJsonRPCUrl: string =
+  process.env.TESTNET_RPC_URL || 'https://data-seed-prebsc-1-s1.binance.org:8545/';
 const explorerApiKey: string | undefined = process.env.BSCSCAN_API_KEY;
 if (!explorerApiKey) {
-  console.log('BSCSCAN_API_KEY not set in an .env file, dployment verification won\'t be available');
+  console.log("BSCSCAN_API_KEY not set in an .env file, deployment verification won't be available");
 }
-
 
 const mainnetAccounts = [
   process.env.DEPLOYER_PRIVATE_KEY ?? '',
@@ -51,8 +51,8 @@ const accounts: HardhatNetworkAccountsUserConfig = [
   {
     privateKey: process.env.REFERRALS_PRIVATE_KEY || '',
     balance,
-  }
-]
+  },
+];
 
 const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
@@ -102,7 +102,7 @@ const config: HardhatUserConfig = {
       url: testnetJsonRPCUrl,
       accounts: {
         mnemonic: process.env.LIVENET_MNEMONIC,
-        path: 'm/44\'/60\'/0\'/0',
+        path: "m/44'/60'/0'/0",
         initialIndex: 0,
         count: 4,
       },

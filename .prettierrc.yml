@@ -1,12 +1,12 @@
 arrowParens: avoid
 bracketSpacing: true
 endOfLine: auto
-importOrder: ["<THIRD_PARTY_MODULES>", "^[./]"]
-importOrderParserPlugins: ["typescript"]
+importOrder: [ "<THIRD_PARTY_MODULES>", "^[./]" ]
+importOrderParserPlugins: [ "typescript" ]
 importOrderSeparation: true
 importOrderSortSpecifiers: true
 printWidth: 120
-singleQuote: false
+singleQuote: true
 tabWidth: 2
 trailingComma: all
 
