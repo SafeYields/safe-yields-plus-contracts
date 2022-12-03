@@ -9302,9 +9302,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hardhat-deploy@npm:0.11.11":
-  version: 0.11.11
-  resolution: "hardhat-deploy@npm:0.11.11"
+"hardhat-deploy@npm:^0.11.22":
+  version: 0.11.22
+  resolution: "hardhat-deploy@npm:0.11.22"
   dependencies:
     "@types/qs": ^6.9.7
     axios: ^0.21.1
@@ -9318,8 +9318,8 @@ __metadata:
     match-all: ^1.2.6
     murmur-128: ^0.2.1
     qs: ^6.9.4
-    zksync-web3: ^0.7.8
-  checksum: 08b7ccadbfa0dc9f52691f2f4892ec3e89f0773cf795a9c7f604d783fe85e0bd8886b0b2c8f013c26e5a0007f7cbcb096ff246ad26f48d6e70ad3bd7f79a984d
+    zksync-web3: ^0.8.1
+  checksum: 4b91afd7d8f453e4b20725b0893b7b892ade4f5fcdfb768362fea0edcb066c2ba65649bbed4d8488363835d798fdfb6f1bbc5ecad2b452f40f08374b1438ab5e
   languageName: node
   linkType: hard
 
@@ -14881,7 +14881,7 @@ __metadata:
     hardhat: 2.10.2
     hardhat-abi-exporter: ^2.10.0
     hardhat-contract-sizer: ^2.6.1
-    hardhat-deploy: 0.11.11
+    hardhat-deploy: ^0.11.22
     hardhat-deploy-ethers: ^0.3.0-beta.13
     hardhat-erc1820: ^0.1.0
     hardhat-ethernal: ^1.0.0
@@ -18703,11 +18703,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zksync-web3@npm:^0.7.8":
-  version: 0.7.13
-  resolution: "zksync-web3@npm:0.7.13"
+"zksync-web3@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "zksync-web3@npm:0.8.1"
   peerDependencies:
-    ethers: ~5.5.0
-  checksum: e93e22f80c46af2fb8c0b604156f0548e464b5988b6b66f44500f7409cc16aa397b3675e57cee09a93a60ae7277d8ae2f7b0503cb27b586765b2408d0894880a
+    ethers: ~5.7.0
+  checksum: 613ebe822df1bef0af4d62386f3aaf65917d45dd80932b0ddf5b81eba6b0a46376f3e74263d153915dcfb8be954f730ded2e34d7806b6b199bbc74e0f124a0fb
   languageName: node
   linkType: hard
