@@ -1,29 +1,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.17;
 
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat-deploy/solc_0.8/proxy/Proxied.sol";
 
 /// @title  Safe Vault
 /// @author crypt0grapher
 /// @notice This contract is responsible for $BUSD pool: mainly deposit/withdrawal and farms management
 contract SafeVault is Proxied {
-    address public shop;
+    IERC20 stableCoin;
+    uint256 public totalSupply;
 
-    constructor(address _safeShop) public {
-        shop = _safeShop;
+    function initialize(address _stableCoin) public proxied {
+        stableCoin = IERC20(_stableCoin);
     }
 
-    function price() public view returns (uint256) {
-        return 1;
+    constructor(address _stableCoin) public {
+        initialize(_stableCoin);
     }
 
-    function buy(uint256 amount) public payable {
-        require(msg.value == amount * price(), "SafeShop:insufficient-amount");
-
+    function deposit(address _user, uint256 _amount) external {
+        totalSupply += _amount;
+        stableCoin.transferFrom(_user, address(this), _amount);
     }
 
-    function sell(uint256 amount) public {
-        payable(msg.sender).transfer(amount * price());
+    function withdraw(address _user, uint256 _amount) external {
+        totalSupply -= _amount;
+        stableCoin.transfer(_user, _amount);
     }
 
 }

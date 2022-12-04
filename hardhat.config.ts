@@ -34,6 +34,9 @@ const mainnetAccounts = [
   process.env.REFERRALS_PRIVATE_KEY ?? '',
 ];
 
+const MAINNET_BUSD_ADDRESS = '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56';
+const TESTNET_BUSD_ADDRESS = '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee';
+
 const balance = '100000000000000000000000';
 const accounts: HardhatNetworkAccountsUserConfig = [
   {
@@ -118,6 +121,11 @@ const config: HardhatUserConfig = {
     investments: 1,
     management: 2,
     referrals: 3,
+    busd: {
+      56: MAINNET_BUSD_ADDRESS,
+      97: TESTNET_BUSD_ADDRESS,
+      1337: MAINNET_BUSD_ADDRESS,
+    },
   },
   solidity: {
     compilers: [
