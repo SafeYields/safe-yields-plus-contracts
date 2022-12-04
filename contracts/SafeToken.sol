@@ -1,38 +1,37 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.17;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import "./interfaces/ISafeToken.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "hardhat-deploy/solc_0.8/proxy/Proxied.sol";
 
 /// @title  SafeToken
 /// @author crypt0grapher
 /// @notice This contract is used as a token
-contract SafeToken is Proxied, Pausable, IERC20, IERC20Metadata {
-    string public name = "Safe Yields Token";
-    string public symbol = "SAFE";
+contract SafeToken is ISafeToken, Proxied, Pausable  {
+    string public constant name = "Safe Yields Token";
+    string public constant symbol = "SAFE";
     string public constant version = "1";
-    uint8 public decimals = 18;
+    uint8 public constant decimals = 18;
     // @dev totalSupply is the total number of tokens in existence, we start with zero
-    uint256 public totalSupply = 0;
+    uint256 public totalSupply;
     mapping(address => bool) public blacklist;
     mapping(address => uint256) private _balances;
 
     // @notice Admins list
-    mapping(address => uint256) public wards;
+    mapping(address => uint256) public admin;
 
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
     mapping(address => uint256) public nonces;
 
     modifier auth() {
-        require(wards[_msgSender()] == 1, "SafeToken:not-authorized");
+        require(admin[_msgSender()] == 1, "SafeToken:not-authorized");
         _;
     }
 
     function initialize() public proxied {
-        wards[_msgSender()] = 1;
+        admin[_msgSender()] = 1;
     }
 
     constructor() public {
@@ -49,6 +48,7 @@ contract SafeToken is Proxied, Pausable, IERC20, IERC20Metadata {
         uint256 wad
     ) public returns (bool) {
         require(!paused(), "SafeToken:paused");
+        require(src == address(0) || dst == address(0), "SafeToken:transfer-prohibited");
         require(balanceOf[src] >= wad, "SafeToken:insufficient-balance");
         require(!blacklist[src] && !blacklist[dst], "SafeToken:blacklisted");
         if (src != _msgSender()) {
@@ -88,13 +88,13 @@ contract SafeToken is Proxied, Pausable, IERC20, IERC20Metadata {
     // @notice Grant access
     // @param guy admin to grant auth
     function rely(address guy) external auth {
-        wards[guy] = 1;
+        admin[guy] = 1;
     }
 
     // @notice Deny access
     // @param guy deny auth for
     function deny(address guy) external auth {
-        wards[guy] = 0;
+        admin[guy] = 0;
     }
 
 

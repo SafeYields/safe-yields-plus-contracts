@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.17;
 
-import "./interfaces/ISafeToken.sol";
 import "hardhat-deploy/solc_0.8/proxy/Proxied.sol";
 
-/// @title  SafeShop
+/// @title  Safe Vault
 /// @author crypt0grapher
-/// @notice This contract is used to buy and sell tokens
-contract SafeShop is Proxied {
-    ISafeToken public token;
+/// @notice This contract is responsible for $BUSD pool: mainly deposit/withdrawal and farms management
+contract SafeVault is Proxied {
+    address public shop;
 
-    constructor(address _safeToken) public {
-        token = ISafeToken(_safeToken);
+    constructor(address _safeShop) public {
+        shop = _safeShop;
     }
 
     function price() public view returns (uint256) {
