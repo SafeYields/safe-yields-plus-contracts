@@ -9,6 +9,9 @@ import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 /// @notice This contract is used as a token
 interface ISafeToken is IERC20, IERC20Metadata {
 
+    //buy a Safe Yields token for _amount in BUSD
+    function buy(uint256 _amount) external payable;
+
     function mint(address usr, uint256 wad) external;
 
     function burn(address usr, uint256 wad) external;

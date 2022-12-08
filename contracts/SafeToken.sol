@@ -45,6 +45,7 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
     uint256 constant HUNDRED_PERCENT = 10000;
 
     // @notice Project wallets
+    address public liquidityPoolAddress;
     address public investmentPoolAddress;
     address public managementAddress;
     address public referralProgramAddress;
@@ -61,18 +62,19 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
 
     /* ============ Changing State Functions ============ */
 
-    function initialize(address _usdToken, address _vault, address _investmentPoolAddress, address _managementAddress, address _referralProgramAddress) public proxied {
+    function initialize(address _usdToken, address _vault, address _liquidityPoolAddress, address _investmentPoolAddress, address _managementAddress, address _referralProgramAddress) public proxied {
         admin[_msgSender()] = 1;
         vault = ISafeVault(_vault);
         usdToken = IERC20(_usdToken);
         investmentPoolAddress = _investmentPoolAddress;
+        liquidityPoolAddress = _liquidityPoolAddress;
         managementAddress = _managementAddress;
         referralProgramAddress = _referralProgramAddress;
         usdToken.approve(address(this), type(uint256).max);
     }
 
-    constructor(address _usdToken, address _vault, address _investmentPoolAddress, address _managementAddress, address _referralProgramAddress)  {
-        initialize(_usdToken, _vault, _investmentPoolAddress, _managementAddress, _referralProgramAddress);
+    constructor(address _usdToken, address _vault, address _liquidityPoolAddress, address _investmentPoolAddress, address _managementAddress, address _referralProgramAddress)  {
+        initialize(_usdToken, _vault, _liquidityPoolAddress, _investmentPoolAddress, _managementAddress, _referralProgramAddress);
     }
 
     function transfer(address dst, uint256 wad) external returns (bool) {
@@ -114,6 +116,7 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
         _mint(_msgSender(), safeAmount);
 
         IERC20(usdToken).transferFrom(_msgSender(), address(this), _amount);
+        IERC20(usdToken).transferFrom(address(this), liquidityPoolAddress, tax * liquidityPoolDistribution / HUNDRED_PERCENT);
         IERC20(usdToken).transferFrom(address(this), investmentPoolAddress, tax * investmentPoolDistribution / HUNDRED_PERCENT);
         IERC20(usdToken).transferFrom(address(this), managementAddress, tax * managementDistribution / HUNDRED_PERCENT);
         IERC20(usdToken).transferFrom(address(this), referralProgramAddress, tax * referralProgramDistribution / HUNDRED_PERCENT);
