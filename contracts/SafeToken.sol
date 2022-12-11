@@ -33,22 +33,29 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
     mapping(address => mapping(address => uint256)) public allowance;
 
     // @notice Taxes, multiplied by 10000, (25 stands for 0.25%)
-    uint256 public constant buyTaxPercentage = 25;
-    uint256 public constant sellTaxPercentage = 25;
+    uint256 public constant BUY_TAX_PERCENT = 25;
+    uint256 public constant SELL_TAX_PERCENT = 25;
+
+    /// @dev total wallets on the protocol, see Wallets enum
+    uint256 public constant WALLETS = 4;
+
+    /// @notice protocol wallets for easy enumeration,
+    /// @dev the order is extremely important once deployed, see configuration scripts
+    // rewards distribution is the balance of SafeNFT,
+    enum Wallets {
+        LiquidityPool,
+        InvestmentPool,
+        Management,
+        referralProgram
+    }
+
+    // @notice token wallets configuration
+    address[WALLETS] public wallets;
 
     // @notice Distribution percentages, multiplied by 10000, (25 stands for 0.25%)
-    uint256 public constant liquidityPoolDistribution = 5000;
-    uint256 public constant investmentPoolDistribution = 2950;
-    uint256 public constant managementDistribution = 2000;
-    uint256 public constant referralProgramDistribution = 50;
+    uint256[WALLETS] public taxDistributionOnMint;
 
     uint256 constant HUNDRED_PERCENT = 10000;
-
-    // @notice Project wallets
-    address public liquidityPoolAddress;
-    address public investmentPoolAddress;
-    address public managementAddress;
-    address public referralProgramAddress;
 
     IERC20 public usdToken;
     ISafeVault public vault;
@@ -62,19 +69,17 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
 
     /* ============ Changing State Functions ============ */
 
-    function initialize(address _usdToken, address _vault, address _liquidityPoolAddress, address _investmentPoolAddress, address _managementAddress, address _referralProgramAddress) public proxied {
+    function initialize(address _usdToken, address _vault, address[WALLETS] memory _wallets, uint256[WALLETS] memory _taxDistributionOnMint) public proxied {
         admin[_msgSender()] = 1;
         vault = ISafeVault(_vault);
         usdToken = IERC20(_usdToken);
-        investmentPoolAddress = _investmentPoolAddress;
-        liquidityPoolAddress = _liquidityPoolAddress;
-        managementAddress = _managementAddress;
-        referralProgramAddress = _referralProgramAddress;
+        wallets = _wallets;
+        taxDistributionOnMint = _taxDistributionOnMint;
         usdToken.approve(address(this), type(uint256).max);
     }
 
-    constructor(address _usdToken, address _vault, address _liquidityPoolAddress, address _investmentPoolAddress, address _managementAddress, address _referralProgramAddress)  {
-        initialize(_usdToken, _vault, _liquidityPoolAddress, _investmentPoolAddress, _managementAddress, _referralProgramAddress);
+    constructor(address _usdToken, address _vault, address[WALLETS] memory _wallets, uint256[WALLETS] memory _taxDistributionOnMint)  {
+        initialize(_usdToken, _vault, _wallets, _taxDistributionOnMint);
     }
 
     function transfer(address dst, uint256 wad) external returns (bool) {
