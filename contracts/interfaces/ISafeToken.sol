@@ -9,10 +9,31 @@ import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 /// @notice This contract is used as a token
 interface ISafeToken is IERC20, IERC20Metadata {
 
-    //buy a Safe Yields token for _amount in BUSD
-    function buy(uint256 _amount) external payable;
+    /**
+    *   @notice buy Safe Yield tokens with BUSD
+    *   @param _safeTokensToBuy number of tokens to buy, the respective amount of BUSD will be deducted from the user, Safe Yield token will be minted
+    */
+    function buy(uint256 _safeTokensToBuy) external;
+
+    /**
+    *   @notice sell Safe Yield tokens for BUSD
+    *   @param _safeTokensToSell number of tokens to sell, the respective amount of BUSD will be returned from the user, Safe Yield token will be burned
+    */
+    function sell(uint256 _safeTokensToSell) external;
 
     function mint(address usr, uint256 wad) external;
 
     function burn(address usr, uint256 wad) external;
+
+    function getWallets() external view returns (address[4] memory);
+
+    /**
+    *   @notice price of 1 Safe Yield token in StableCoin
+    */
+    function usd() external view returns (IERC20);
+
+    /**
+    *   @notice price of 1 Safe Yield token in StableCoin
+    */
+    function price() external view returns (uint256);
 }
