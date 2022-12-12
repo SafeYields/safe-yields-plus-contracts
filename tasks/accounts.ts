@@ -1,9 +1,8 @@
-import { IDEFODiamond } from '@contractTypes/contracts/interfaces';
-import { showLiquidityPairInfo } from '@utils/liquidity.helper';
-import { announce, info, networkInfo } from '@utils/output.helper';
-import DAI_ABI from 'abi/dai-abi.json';
-import assert from 'assert';
-import chalk from 'chalk';
+import { Tiers } from '@config';
+import { SafeNFT, SafeVault } from '@contractTypes/contracts';
+import { ISafeToken } from '@contractTypes/contracts/interfaces';
+import { formattedFromWei, info, networkInfo } from '@utils/output.helper';
+import erc20abi from 'abi/erc20abi.json';
 import { task } from 'hardhat/config';
 
 task('accounts', 'Get the address and balance information (BNB, SAFE, BUSD) for the accounts.')
@@ -18,45 +17,45 @@ task('accounts', 'Get the address and balance information (BNB, SAFE, BUSD) for 
       },
     } = hre;
     const namedAccounts = await getNamedAccounts();
-    const { dai, forkedDefoToken } = namedAccounts;
-    info('\n 📡 Querying balances...');
-    const daiContract = await ethers.getContractAt(DAI_ABI, dai);
-    const defoTokenDeployment = (await deployments.getOrNull('DEFOToken'))?.address || '';
-    const diamondDeployment = await deployments.get('DEFODiamond');
-    const diamondContract = await ethers.getContract<IDEFODiamond>('DEFODiamond');
-
-    const accounts = user
-      ? { user }
-      : {
-          ...namedAccounts,
-          DEFOdiamond: diamondDeployment.address,
-        };
-
-    const defoContract =
-      forkedDefoToken || defoTokenDeployment
-        ? await ethers.getContractAt('DEFOToken', forkedDefoToken || defoTokenDeployment)
-        : null;
+    const { busd } = namedAccounts;
     await networkInfo(hre, info);
-    assert(defoContract, 'defoContract is null');
-    announce(
-      `DEFO token is ${chalk.yellow(
-        forkedDefoToken ? 'on live network' : defoTokenDeployment ? 'deployed locally' : chalk.red('not deployed!'),
-      )}. Address: ${defoContract.address}`,
-    );
+    info('\n 📡 Querying balances...');
+    const busdContract = await ethers.getContractAt(erc20abi, busd);
+
+    const tokenDeployment = await deployments.get('SafeToken');
+    const nftDeployment = await deployments.get('SafeNFT');
+    const vaultDeployment = await deployments.get('SafeVault');
+
+    const nftContract = await ethers.getContract<SafeNFT>('SafeNFT');
+    const vaultContract = await ethers.getContract<SafeVault>('SafeVault');
+    const tokenContract = await ethers.getContract<ISafeToken>('SafeToken');
+
+    const accounts = {
+      user,
+      ...namedAccounts,
+      SafeNFT: nftDeployment.address,
+      SafeToken: tokenDeployment.address,
+      SafeVault: vaultDeployment.address,
+    };
 
     const table = await Promise.all(
-      Object.entries(accounts).map(async ([accountName, accountAddress]) => {
-        return {
-          name: accountName,
-          address: accountAddress,
-          AVAX: Number(Number(fromWei(await ethers.provider.getBalance(accountAddress))).toFixed(3)),
-          DAI: Number(Number(fromWei(await daiContract.balanceOf(accountAddress))).toFixed(3)),
-          DEFO: defoContract && Number(Number(fromWei(await defoContract.balanceOf(accountAddress))).toFixed(3)),
-          gems: Number(await diamondContract.balanceOf(accountAddress)),
-        };
-      }),
+      Object.entries(accounts)
+        .filter(([_, accountAddress]) => accountAddress)
+        .map(async ([accountName, accountAddress]) => {
+          return {
+            name: accountName,
+            address: accountAddress,
+            BNB: formattedFromWei(await ethers.provider.getBalance(accountAddress)),
+            BUSD: formattedFromWei(await busdContract.balanceOf(accountAddress)),
+            SAFE: formattedFromWei(await tokenContract.balanceOf(accountAddress)),
+            SafeNFTTier1: Number(await nftContract.balanceOf(accountAddress, Tiers.Tier1)),
+            SafeNFTTier2: Number(await nftContract.balanceOf(accountAddress, Tiers.Tier2)),
+            SafeNFTTier3: Number(await nftContract.balanceOf(accountAddress, Tiers.Tier3)),
+            SafeNFTTier4: Number(await nftContract.balanceOf(accountAddress, Tiers.Tier4)),
+          };
+        }),
     );
     console.table(table);
 
-    await showLiquidityPairInfo(hre, info);
+    info(`Vault totalSupply: ${fromWei(await vaultContract.totalSupply())}`);
   });

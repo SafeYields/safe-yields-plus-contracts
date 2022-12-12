@@ -20,5 +20,12 @@ export const wallets = async (hre: HardhatRuntimeEnvironment): Promise<string[]>
 export const taxDistributionForSafeToken = [percent(50), percent(29.5), percent(2), percent(0.5)];
 export const costDistributionForNFT = [percent(5), percent(70), percent(20), percent(5)];
 
+export enum Tiers {
+  Tier1,
+  Tier2,
+  Tier3,
+  Tier4,
+}
+
 export const tierPriceNFT = [toWei(131.25), toWei(262.5), toWei(525), toWei(1050)];
 export const tierSupplyNFT = [2000, 1000, 1000, 1000];

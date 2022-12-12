@@ -1,3 +1,4 @@
+import { BigNumberish } from '@ethersproject/bignumber';
 import chalk from 'chalk';
 import { BigNumber, ethers } from 'ethers';
 import { DeployResult } from 'hardhat-deploy/dist/types';
@@ -32,3 +33,4 @@ export const displayDeployResult = (name: string, result: DeployResult) =>
 
 export const toWei = (value: number | string | BigNumber) => ethers.utils.parseEther(value.toString());
 export const fromWei = ethers.utils.formatEther;
+export const formattedFromWei = (value: BigNumberish) => Number(Number(fromWei(value)).toFixed(3));
