@@ -58,4 +58,5 @@ task('accounts', 'Get the address and balance information (BNB, SAFE, BUSD) for 
     console.table(table);
 
     info(`Vault totalSupply: ${fromWei(await vaultContract.totalSupply())}`);
+    info(`Safe price: ${fromWei(await tokenContract.price())}`);
   });

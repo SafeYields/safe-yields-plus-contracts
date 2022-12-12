@@ -167,7 +167,7 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
     }
 
     function price() public view returns (uint256) {
-        return getUsdReserves() / totalSupply;
+        return (totalSupply == 0) ? 1e18 : getUsdReserves() / totalSupply;
     }
 
     function getWallets() public view returns (address[WALLETS] memory) {
