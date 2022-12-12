@@ -4,7 +4,9 @@ import assert from 'assert';
 import { task, types } from 'hardhat/config';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
-const MAINNET_BUSD_WHALE_ADDRESS = '0x095f915493213e34cc95dbdea854d6c131f20832';
+// const MAINNET_BUSD_WHALE_ADDRESS = '0x095f915493213e34cc95dbdea854d6c131f20832';
+const MAINNET_BUSD_WHALE_ADDRESS = '0x4b16c5de96eb2117bbe5fd171e4d203624b014aa';
+// const MAINNET_BUSD_WHALE_ADDRESS = '0x3f55182d0fc8527812be14394919eb0b0ff29e98';
 // const MAINNET_BUSD_WHALE_ADDRESS = '0x8894e0a0c962cb723c1976a4421c95949be2d4e3';
 
 const beTheWhale = async (hre: HardhatRuntimeEnvironment, accountToFund: string, amountToTransfer?: number) => {

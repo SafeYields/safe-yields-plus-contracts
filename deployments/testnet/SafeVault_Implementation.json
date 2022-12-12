@@ -1,0 +1,186 @@
+{
+  "address": "0x60462559989550D0145286a6154f5791A35916D4",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_stableCoin",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "balances",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "deposit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_stableCoin",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_receiver",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x40186743e823a0773976b88b0812a843630179adc2c091cbcdc125ea2dc93183",
+  "receipt": {
+    "to": null,
+    "from": "0xbECA6789367Ba654a5BBe533D182e0AA38627960",
+    "contractAddress": "0x60462559989550D0145286a6154f5791A35916D4",
+    "transactionIndex": 6,
+    "gasUsed": "623586",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xc9f350b93f1401cdc3deeaab5f530275ebf799faea3f39cd8ce34f525620d727",
+    "transactionHash": "0x40186743e823a0773976b88b0812a843630179adc2c091cbcdc125ea2dc93183",
+    "logs": [],
+    "blockNumber": 25385044,
+    "cumulativeGasUsed": "861716",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "0052bfcba2de104cda6885f9d0bc61ea",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stableCoin\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_user\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stableCoin\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_receiver\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"crypt0grapher\",\"kind\":\"dev\",\"methods\":{},\"title\":\"Safe Vault\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"This contract is responsible for $BUSD pool: mainly deposit/withdrawal and farms management\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/SafeVault.sol\":\"SafeVault\"},\"evmVersion\":\"berlin\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":false,\"runs\":250},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface IERC20 {\\n    /**\\n     * @dev Emitted when `value` tokens are moved from one account (`from`) to\\n     * another (`to`).\\n     *\\n     * Note that `value` may be zero.\\n     */\\n    event Transfer(address indexed from, address indexed to, uint256 value);\\n\\n    /**\\n     * @dev Emitted when the allowance of a `spender` for an `owner` is set by\\n     * a call to {approve}. `value` is the new allowance.\\n     */\\n    event Approval(address indexed owner, address indexed spender, uint256 value);\\n\\n    /**\\n     * @dev Returns the amount of tokens in existence.\\n     */\\n    function totalSupply() external view returns (uint256);\\n\\n    /**\\n     * @dev Returns the amount of tokens owned by `account`.\\n     */\\n    function balanceOf(address account) external view returns (uint256);\\n\\n    /**\\n     * @dev Moves `amount` tokens from the caller's account to `to`.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transfer(address to, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Returns the remaining number of tokens that `spender` will be\\n     * allowed to spend on behalf of `owner` through {transferFrom}. This is\\n     * zero by default.\\n     *\\n     * This value changes when {approve} or {transferFrom} are called.\\n     */\\n    function allowance(address owner, address spender) external view returns (uint256);\\n\\n    /**\\n     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * IMPORTANT: Beware that changing an allowance with this method brings the risk\\n     * that someone may use both the old and the new allowance by unfortunate\\n     * transaction ordering. One possible solution to mitigate this race\\n     * condition is to first reduce the spender's allowance to 0 and set the\\n     * desired value afterwards:\\n     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\\n     *\\n     * Emits an {Approval} event.\\n     */\\n    function approve(address spender, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Moves `amount` tokens from `from` to `to` using the\\n     * allowance mechanism. `amount` is then deducted from the caller's\\n     * allowance.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transferFrom(\\n        address from,\\n        address to,\\n        uint256 amount\\n    ) external returns (bool);\\n}\\n\",\"keccak256\":\"0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b\",\"license\":\"MIT\"},\"contracts/SafeVault.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.17;\\n\\nimport \\\"@openzeppelin/contracts/token/ERC20/IERC20.sol\\\";\\nimport \\\"hardhat-deploy/solc_0.8/proxy/Proxied.sol\\\";\\nimport \\\"./interfaces/ISafeVault.sol\\\";\\n\\n/// @title  Safe Vault\\n/// @author crypt0grapher\\n/// @notice This contract is responsible for $BUSD pool: mainly deposit/withdrawal and farms management\\ncontract SafeVault is ISafeVault, Proxied {\\n    IERC20 stableCoin;\\n    uint256 public totalSupply;\\n    mapping(address => uint256) public balances;\\n\\n    function initialize(address _stableCoin) public proxied {\\n        stableCoin = IERC20(_stableCoin);\\n    }\\n\\n    constructor(address _stableCoin) public {\\n        initialize(_stableCoin);\\n    }\\n\\n    function deposit(address _user, uint256 _amount) external {\\n        require(_amount > 0, \\\"SafeVault: amount must be greater than 0\\\");\\n        balances[_user] += _amount;\\n        totalSupply += _amount;\\n        stableCoin.transferFrom(_user, address(this), _amount);\\n    }\\n\\n    function withdraw(address _receiver, uint256 _amount) external {\\n        require(_amount > 0, \\\"SafeVault: amount must be greater than 0\\\");\\n        require(balances[msg.sender] >= _amount, \\\"SafeVault: user balance must be greater than amount\\\");\\n        balances[msg.sender] -= _amount;\\n        totalSupply -= _amount;\\n        stableCoin.transfer(_receiver, _amount);\\n    }\\n\\n}\\n\",\"keccak256\":\"0x034ad1433403903ba33a3ff397b31c1917519b913335dd46b4a7127ed061ed7a\",\"license\":\"MIT\"},\"contracts/interfaces/ISafeVault.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.17;\\n\\n/// @title  ISafeVault\\n/// @author crypt0grapher\\n/// @notice This contract is used as a token\\ninterface ISafeVault {\\n\\n    // @notice Deposit BUSD to the vault, spending should be approved if the user is not the sender\\n    function deposit(address _user, uint256 _amount) external;\\n\\n    // @notice Withdraw BUSD from the vault\\n    function withdraw(address _user, uint256 _amount) external;\\n\\n    // @notice totalSupply of the vault\\n    function totalSupply() external view returns (uint256);\\n\\n}\\n\",\"keccak256\":\"0x4dbcce5571fd391d2b9752577fbc4cbffc9d6942cf5d554048dfc1e3eaea9faa\",\"license\":\"MIT\"},\"hardhat-deploy/solc_0.8/proxy/Proxied.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\nabstract contract Proxied {\\n    /// @notice to be used by initialisation / postUpgrade function so that only the proxy's admin can execute them\\n    /// It also allows these functions to be called inside a contructor\\n    /// even if the contract is meant to be used without proxy\\n    modifier proxied() {\\n        address proxyAdminAddress = _proxyAdmin();\\n        // With hardhat-deploy proxies\\n        // the proxyAdminAddress is zero only for the implementation contract\\n        // if the implementation contract want to be used as a standalone/immutable contract\\n        // it simply has to execute the `proxied` function\\n        // This ensure the proxyAdminAddress is never zero post deployment\\n        // And allow you to keep the same code for both proxied contract and immutable contract\\n        if (proxyAdminAddress == address(0)) {\\n            // ensure can not be called twice when used outside of proxy : no admin\\n            // solhint-disable-next-line security/no-inline-assembly\\n            assembly {\\n                sstore(\\n                    0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103,\\n                    0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\\n                )\\n            }\\n        } else {\\n            require(msg.sender == proxyAdminAddress);\\n        }\\n        _;\\n    }\\n\\n    modifier onlyProxyAdmin() {\\n        require(msg.sender == _proxyAdmin(), \\\"NOT_AUTHORIZED\\\");\\n        _;\\n    }\\n\\n    function _proxyAdmin() internal view returns (address ownerAddress) {\\n        // solhint-disable-next-line security/no-inline-assembly\\n        assembly {\\n            ownerAddress := sload(0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103)\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0xaaceeafeeaf0d200ca3942d8bf14c1c4f787a77f79cc87c08bb668e65acdee29\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50604051610b80380380610b80833981810160405281019061003291906101d2565b6100418161004760201b60201c565b506101ff565b600061005761014660201b60201c565b9050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16036100c95773ffffffffffffffffffffffffffffffffffffffff7fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d610355610102565b8073ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161461010157600080fd5b5b816000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050565b60007fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d610354905090565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061019f82610174565b9050919050565b6101af81610194565b81146101ba57600080fd5b50565b6000815190506101cc816101a6565b92915050565b6000602082840312156101e8576101e761016f565b5b60006101f6848285016101bd565b91505092915050565b6109728061020e6000396000f3fe608060405234801561001057600080fd5b50600436106100575760003560e01c806318160ddd1461005c57806327e235e31461007a57806347e7ef24146100aa578063c4d66de8146100c6578063f3fef3a3146100e2575b600080fd5b6100646100fe565b6040516100719190610585565b60405180910390f35b610094600480360381019061008f9190610603565b610104565b6040516100a19190610585565b60405180910390f35b6100c460048036038101906100bf919061065c565b61011c565b005b6100e060048036038101906100db9190610603565b610273565b005b6100fc60048036038101906100f7919061065c565b61036c565b005b60015481565b60026020528060005260406000206000915090505481565b6000811161015f576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016101569061071f565b60405180910390fd5b80600260008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282546101ae919061076e565b9250508190555080600160008282546101c7919061076e565b9250508190555060008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166323b872dd8330846040518463ffffffff1660e01b815260040161022b939291906107b1565b6020604051808303816000875af115801561024a573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061026e9190610820565b505050565b600061027d610543565b9050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16036102ef5773ffffffffffffffffffffffffffffffffffffffff7fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d610355610328565b8073ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161461032757600080fd5b5b816000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050565b600081116103af576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016103a69061071f565b60405180910390fd5b80600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020541015610431576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610428906108bf565b60405180910390fd5b80600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825461048091906108df565b92505081905550806001600082825461049991906108df565b9250508190555060008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663a9059cbb83836040518363ffffffff1660e01b81526004016104fb929190610913565b6020604051808303816000875af115801561051a573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061053e9190610820565b505050565b60007fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d610354905090565b6000819050919050565b61057f8161056c565b82525050565b600060208201905061059a6000830184610576565b92915050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006105d0826105a5565b9050919050565b6105e0816105c5565b81146105eb57600080fd5b50565b6000813590506105fd816105d7565b92915050565b600060208284031215610619576106186105a0565b5b6000610627848285016105ee565b91505092915050565b6106398161056c565b811461064457600080fd5b50565b60008135905061065681610630565b92915050565b60008060408385031215610673576106726105a0565b5b6000610681858286016105ee565b925050602061069285828601610647565b9150509250929050565b600082825260208201905092915050565b7f536166655661756c743a20616d6f756e74206d7573742062652067726561746560008201527f72207468616e2030000000000000000000000000000000000000000000000000602082015250565b600061070960288361069c565b9150610714826106ad565b604082019050919050565b60006020820190508181036000830152610738816106fc565b9050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b60006107798261056c565b91506107848361056c565b925082820190508082111561079c5761079b61073f565b5b92915050565b6107ab816105c5565b82525050565b60006060820190506107c660008301866107a2565b6107d360208301856107a2565b6107e06040830184610576565b949350505050565b60008115159050919050565b6107fd816107e8565b811461080857600080fd5b50565b60008151905061081a816107f4565b92915050565b600060208284031215610836576108356105a0565b5b60006108448482850161080b565b91505092915050565b7f536166655661756c743a20757365722062616c616e6365206d7573742062652060008201527f67726561746572207468616e20616d6f756e7400000000000000000000000000602082015250565b60006108a960338361069c565b91506108b48261084d565b604082019050919050565b600060208201905081810360008301526108d88161089c565b9050919050565b60006108ea8261056c565b91506108f58361056c565b925082820390508181111561090d5761090c61073f565b5b92915050565b600060408201905061092860008301856107a2565b6109356020830184610576565b939250505056fea26469706673582212201cbff897febfe5293c622b7af35b672a950d0396ecbdad30fdc26e400edac3dc64736f6c63430008110033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100575760003560e01c806318160ddd1461005c57806327e235e31461007a57806347e7ef24146100aa578063c4d66de8146100c6578063f3fef3a3146100e2575b600080fd5b6100646100fe565b6040516100719190610585565b60405180910390f35b610094600480360381019061008f9190610603565b610104565b6040516100a19190610585565b60405180910390f35b6100c460048036038101906100bf919061065c565b61011c565b005b6100e060048036038101906100db9190610603565b610273565b005b6100fc60048036038101906100f7919061065c565b61036c565b005b60015481565b60026020528060005260406000206000915090505481565b6000811161015f576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016101569061071f565b60405180910390fd5b80600260008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282546101ae919061076e565b9250508190555080600160008282546101c7919061076e565b9250508190555060008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166323b872dd8330846040518463ffffffff1660e01b815260040161022b939291906107b1565b6020604051808303816000875af115801561024a573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061026e9190610820565b505050565b600061027d610543565b9050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16036102ef5773ffffffffffffffffffffffffffffffffffffffff7fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d610355610328565b8073ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161461032757600080fd5b5b816000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050565b600081116103af576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016103a69061071f565b60405180910390fd5b80600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020541015610431576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610428906108bf565b60405180910390fd5b80600260003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020600082825461048091906108df565b92505081905550806001600082825461049991906108df565b9250508190555060008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663a9059cbb83836040518363ffffffff1660e01b81526004016104fb929190610913565b6020604051808303816000875af115801561051a573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061053e9190610820565b505050565b60007fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d610354905090565b6000819050919050565b61057f8161056c565b82525050565b600060208201905061059a6000830184610576565b92915050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006105d0826105a5565b9050919050565b6105e0816105c5565b81146105eb57600080fd5b50565b6000813590506105fd816105d7565b92915050565b600060208284031215610619576106186105a0565b5b6000610627848285016105ee565b91505092915050565b6106398161056c565b811461064457600080fd5b50565b60008135905061065681610630565b92915050565b60008060408385031215610673576106726105a0565b5b6000610681858286016105ee565b925050602061069285828601610647565b9150509250929050565b600082825260208201905092915050565b7f536166655661756c743a20616d6f756e74206d7573742062652067726561746560008201527f72207468616e2030000000000000000000000000000000000000000000000000602082015250565b600061070960288361069c565b9150610714826106ad565b604082019050919050565b60006020820190508181036000830152610738816106fc565b9050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b60006107798261056c565b91506107848361056c565b925082820190508082111561079c5761079b61073f565b5b92915050565b6107ab816105c5565b82525050565b60006060820190506107c660008301866107a2565b6107d360208301856107a2565b6107e06040830184610576565b949350505050565b60008115159050919050565b6107fd816107e8565b811461080857600080fd5b50565b60008151905061081a816107f4565b92915050565b600060208284031215610836576108356105a0565b5b60006108448482850161080b565b91505092915050565b7f536166655661756c743a20757365722062616c616e6365206d7573742062652060008201527f67726561746572207468616e20616d6f756e7400000000000000000000000000602082015250565b60006108a960338361069c565b91506108b48261084d565b604082019050919050565b600060208201905081810360008301526108d88161089c565b9050919050565b60006108ea8261056c565b91506108f58361056c565b925082820390508181111561090d5761090c61073f565b5b92915050565b600060408201905061092860008301856107a2565b6109356020830184610576565b939250505056fea26469706673582212201cbff897febfe5293c622b7af35b672a950d0396ecbdad30fdc26e400edac3dc64736f6c63430008110033",
+  "devdoc": {
+    "author": "crypt0grapher",
+    "kind": "dev",
+    "methods": {},
+    "title": "Safe Vault",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "notice": "This contract is responsible for $BUSD pool: mainly deposit/withdrawal and farms management",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 5518,
+        "contract": "contracts/SafeVault.sol:SafeVault",
+        "label": "stableCoin",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_contract(IERC20)2440"
+      },
+      {
+        "astId": 5520,
+        "contract": "contracts/SafeVault.sol:SafeVault",
+        "label": "totalSupply",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 5524,
+        "contract": "contracts/SafeVault.sol:SafeVault",
+        "label": "balances",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_address,t_uint256)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IERC20)2440": {
+        "encoding": "inplace",
+        "label": "contract IERC20",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

@@ -6,6 +6,7 @@ import "./interfaces/ISafeVault.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat-deploy/solc_0.8/proxy/Proxied.sol";
+import "hardhat/console.sol";
 
 /// @title  SafeToken
 /// @author crypt0grapher
@@ -116,21 +117,29 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
     }
 
     function buy(uint256 _safeTokensToBuy) public {
-        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price();
+        console.log("buying %s SAFE tokens", _safeTokensToBuy);
+        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e18;
+        console.log("usdPriceOfTokensToBuy %s", usdPriceOfTokensToBuy);
         uint256 usdTax = usdPriceOfTokensToBuy * BUY_TAX_PERCENT / HUNDRED_PERCENT;
+        console.log("usdTax %s", usdTax);
         uint256 usdToSpend = usdPriceOfTokensToBuy + usdTax;
+        console.log("usdToSpend %s", usdToSpend);
         _mint(_msgSender(), _safeTokensToBuy);
-
+        console.log("minted");
+        console.log("address(this) %s", address(this));
         usd.transferFrom(_msgSender(), address(this), usdToSpend);
+        console.log("usd transferred");
         safeVault.deposit(address(this), usdPriceOfTokensToBuy);
+        console.log("deposited to the vault");
         for (uint256 i = 0; i < WALLETS; i++) {
+            console.log("transferring to wallet %s", i);
             usd.transfer(wallets[i], usdTax * taxDistributionOnMint[i] / HUNDRED_PERCENT);
         }
 
     }
 
     function sell(uint256 _safeTokensToSell) public {
-        uint256 usdPriceOfTokensToSell = _safeTokensToSell * price();
+        uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() /  1e18;
         uint256 usdTax = usdPriceOfTokensToSell * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdToSpend = usdPriceOfTokensToSell + usdTax;
         _burn(_msgSender(), _safeTokensToSell);
@@ -167,7 +176,7 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
     }
 
     function price() public view returns (uint256) {
-        return (totalSupply == 0) ? 1e18 : getUsdReserves() / totalSupply;
+        return (totalSupply == 0) ? 1e18 : getUsdReserves() * 1e18 / totalSupply;
     }
 
     function getWallets() public view returns (address[WALLETS] memory) {
