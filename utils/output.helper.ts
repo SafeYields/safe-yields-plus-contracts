@@ -1,8 +1,7 @@
 import chalk from 'chalk';
+import { BigNumber, ethers } from 'ethers';
 import { DeployResult } from 'hardhat-deploy/dist/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-
-type MutableObject<T> = { -readonly [P in keyof T]: T[P] };
 
 const suppresableLogger = (hide: boolean | string | undefined, logger: (message: any) => void) => (message: any) =>
   !hide && logger(message);
@@ -30,3 +29,6 @@ export const displayDeployResult = (name: string, result: DeployResult) =>
   !result.newlyDeployed
     ? deployWarning(`Re-used existing ${name} at ${result.address}`)
     : deploySuccess(`${name} deployed at ${result.address}`);
+
+export const toWei = (value: number | string | BigNumber) => ethers.utils.parseEther(value.toString());
+export const fromWei = ethers.utils.formatEther;

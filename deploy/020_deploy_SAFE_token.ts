@@ -1,3 +1,4 @@
+import { taxDistributionForSafeToken, wallets } from '@config';
 import { deployAndTell } from '@utils/deployFunc';
 import { DeployFunction } from 'hardhat-deploy/types';
 
@@ -6,16 +7,14 @@ const func: DeployFunction = async hre => {
     deployments: { deploy },
   } = hre;
 
-  const { deployer, busd, liquidity, investments, management, referrals } = await hre.getNamedAccounts();
+  const { deployer, busd } = await hre.getNamedAccounts();
 
   const vault = await hre.deployments.get('SafeVault');
-  const wallets = [liquidity, investments, management, referrals];
-  const distribution = [5000, 2950, 2000, 50];
 
   await deployAndTell(deploy, 'SafeToken', {
     from: deployer,
     proxy: 'initialize',
-    args: [busd, vault.address, wallets, distribution],
+    args: [busd, vault.address, await wallets(hre), taxDistributionForSafeToken],
   });
 };
 export default func;

@@ -34,6 +34,7 @@ contract SafeNFT is ERC1155PresetMinterPauser, Proxied {
     }
 
     constructor(string memory _uri, uint256[TIERS] memory _tierPrice, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint) ERC1155PresetMinterPauser(_uri) {
+        ///todo add tier totalsupply configuration
         initialize(_uri, _tierPrice, _safeToken, _priceDistributionOnMint);
     }
 
@@ -41,6 +42,7 @@ contract SafeNFT is ERC1155PresetMinterPauser, Proxied {
 
     function buy(Tiers _tier, uint256 _amount) public {
         require(_amount > 0, "ERC1155PresetMinterPauser: amount must be greater than 0");
+        ///todo check on totalsupply per tier
         require(tierPrice[uint256(_tier)] > 0, "ERC1155PresetMinterPauser: tier price must be greater than 0");
         uint256 id = uint256(_tier);
         uint256 price = tierPrice[uint256(_tier)] * _amount;

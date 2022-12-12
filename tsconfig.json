@@ -16,7 +16,7 @@
     "target": "es2020",
     "baseUrl": "./",
     "paths": {
-      "@config": ["config/*"],
+      "@config": ["config/index.ts"],
       "@contractTypes/*": ["types/*"],
       "@utils/*": ["utils/*"],
       "@constants/*": ["constants/*"]

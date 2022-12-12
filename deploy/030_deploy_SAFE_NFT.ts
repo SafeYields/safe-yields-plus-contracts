@@ -1,3 +1,4 @@
+import { costDistributionForNFT, tierPriceNFT } from '@config';
 import { deployAndTell } from '@utils/deployFunc';
 import { DeployFunction } from 'hardhat-deploy/types';
 
@@ -6,17 +7,14 @@ const func: DeployFunction = async hre => {
     deployments: { deploy },
   } = hre;
 
-  const { deployer, liquidity, investments, management, referrals } = await hre.getNamedAccounts();
+  const { deployer } = await hre.getNamedAccounts();
 
   const token = await hre.deployments.get('SafeToken');
-  // const wallets = [liquidity, investments, management, referrals];
-  const price = [5000, 2950, 2000, 50];
-  const distribution = [5000, 2950, 2000, 50];
 
   await deployAndTell(deploy, 'SafeNFT', {
     from: deployer,
     proxy: 'initialize',
-    args: ['', price, token.address, distribution],
+    args: ['', tierPriceNFT, token.address, costDistributionForNFT],
   });
 };
 export default func;
