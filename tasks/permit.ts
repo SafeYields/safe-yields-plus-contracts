@@ -22,20 +22,15 @@ export default task('permit', 'approve SafeToken to spend BUSD')
     const busdContract = await ethers.getContractAt(erc20abi, busd);
 
     for (const token of [busdContract]) {
-      const name = await token.name();
-      announce(`Approving spending of ${name}`);
+      announce(`Approving spending of BUSD`);
       let allowance = await token.allowance(signer, spenderAddress);
-      info(
-        `Current allowance is ${sayMaximumForMaxUint(allowance)} ${
-          allowance.eq(ethers.constants.MaxUint256) && 'already'
-        }`,
-      );
+      info(`Current allowance is ${sayMaximumForMaxUint(allowance)}`);
       if (!allowance.eq(ethers.constants.MaxUint256)) {
         info(`Calling approve for ${await token.name()}, max amount`);
         await token.approve(spenderAddress, ethers.constants.MaxUint256);
         allowance = await token.allowance(signer, spenderAddress);
         success(
-          `Permission to spend granted to DEFO Diamond Contract deployed to ${spenderAddress}. Now allowance is ${sayMaximumForMaxUint(
+          `Permission to spend granted to Safe Yields Token Contract deployed to ${spenderAddress}. Now allowance is ${sayMaximumForMaxUint(
             allowance,
           )}`,
         );

@@ -17,7 +17,7 @@ contract SafeNFT is ERC1155PresetMinterPauser, Proxied {
     ISafeToken public safeToken;
 
     /// @dev total wallets on the protocol, see Wallets enum
-    uint256 public constant WALLETS = 4;
+    uint256 public constant WALLETS = 3;
 
     // @notice Distribution percentages, multiplied by 10000, (25 stands for 0.25%)
     uint256[WALLETS] public priceDistributionOnMint;
@@ -37,7 +37,6 @@ contract SafeNFT is ERC1155PresetMinterPauser, Proxied {
         ///todo add tier totalsupply configuration
         initialize(_uri, _tierPrice, _safeToken, _priceDistributionOnMint);
     }
-
 
 
     function buy(Tiers _tier, uint256 _amount) public {

@@ -38,7 +38,7 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
     uint256 public constant SELL_TAX_PERCENT = 25;
 
     /// @dev total wallets on the protocol, see Wallets enum
-    uint256 public constant WALLETS = 4;
+    uint256 public constant WALLETS = 3;
 
     /// @notice protocol wallets for easy enumeration,
     /// @dev the order is extremely important once deployed, see configuration scripts
@@ -46,15 +46,14 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
     enum Wallets {
         LiquidityPool,
         InvestmentPool,
-        Management,
-        referralProgram
+        Management
     }
 
     // @notice token wallets configuration
     address[WALLETS] wallets;
 
     // @notice Distribution percentages, multiplied by 10000, (25 stands for 0.25%)
-    uint256[WALLETS] public taxDistributionOnMint;
+    uint256[WALLETS] public taxDistributionOnMintAndBurn;
 
     uint256 constant HUNDRED_PERCENT = 10000;
 
@@ -71,17 +70,17 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
 
     /* ============ Changing State Functions ============ */
 
-    function initialize(address _usdToken, address _safeVault, address[WALLETS] memory _wallets, uint256[WALLETS] memory _taxDistributionOnMint) public proxied {
+    function initialize(address _usdToken, address _safeVault, address[WALLETS] memory _wallets, uint256[WALLETS] memory _taxDistributionOnMintAndBurn) public proxied {
         admin[_msgSender()] = 1;
         safeVault = ISafeVault(_safeVault);
         usd = IERC20(_usdToken);
         wallets = _wallets;
-        taxDistributionOnMint = _taxDistributionOnMint;
+        taxDistributionOnMintAndBurn = _taxDistributionOnMintAndBurn;
         usd.approve(address(safeVault), type(uint256).max);
     }
 
-    constructor(address _usdToken, address _safeVault, address[WALLETS] memory _wallets, uint256[WALLETS] memory _taxDistributionOnMint)  {
-        initialize(_usdToken, _safeVault, _wallets, _taxDistributionOnMint);
+    constructor(address _usdToken, address _safeVault, address[WALLETS] memory _wallets, uint256[WALLETS] memory _taxDistributionOnMintAndBurn)  {
+        initialize(_usdToken, _safeVault, _wallets, _taxDistributionOnMintAndBurn);
     }
 
     function transfer(address dst, uint256 wad) external returns (bool) {
@@ -116,37 +115,58 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
         _burn(_user, _amount);
     }
 
-    function buy(uint256 _safeTokensToBuy) public {
-        console.log("buying %s SAFE tokens", _safeTokensToBuy);
-        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e18;
-        console.log("usdPriceOfTokensToBuy %s", usdPriceOfTokensToBuy);
-        uint256 usdTax = usdPriceOfTokensToBuy * BUY_TAX_PERCENT / HUNDRED_PERCENT;
-        console.log("usdTax %s", usdTax);
-        uint256 usdToSpend = usdPriceOfTokensToBuy + usdTax;
-        console.log("usdToSpend %s", usdToSpend);
-        _mint(_msgSender(), _safeTokensToBuy);
-        console.log("minted");
-        console.log("address(this) %s", address(this));
-        usd.transferFrom(_msgSender(), address(this), usdToSpend);
-        console.log("usd transferred");
-        safeVault.deposit(address(this), usdPriceOfTokensToBuy);
-        console.log("deposited to the vault");
+    // for _usdToSpend amount buy safeTokensToBuy SAFE
+    // _usdToSpend = usdToSwapForSafe + usdTax
+    // usdTax = usdToSwapForSafe * buyTax
+    // safeTokensToBuy = usdToSwapForSafe / price();
+    function buySafeForExactAmountOfUSD(uint256 _usdToSpend) public {
+        console.log("buySafeForExactAmountOfUSD, _usdToSpend: %s", _usdToSpend);
+        console.log("_msgSender(): %s", _msgSender());
+        console.log("usd: %s", address(usd));
+        uint256 usdToSwapForSafe = _usdToSpend * (HUNDRED_PERCENT - BUY_TAX_PERCENT) / HUNDRED_PERCENT;
+        uint256 usdTax = usdToSwapForSafe * BUY_TAX_PERCENT / HUNDRED_PERCENT;
+        console.log("usdTax", usdTax);
+        uint256 safeTokensToBuy = (usdToSwapForSafe * 1e18) / price();
+        console.log("safeTokensToBuy", safeTokensToBuy);
+        _mint(_msgSender(), safeTokensToBuy);
+        usd.transferFrom(_msgSender(), address(this), _usdToSpend);
+        safeVault.deposit(address(this), usdToSwapForSafe);
         for (uint256 i = 0; i < WALLETS; i++) {
-            console.log("transferring to wallet %s", i);
-            usd.transfer(wallets[i], usdTax * taxDistributionOnMint[i] / HUNDRED_PERCENT);
+            usd.transfer(wallets[i], usdTax * taxDistributionOnMintAndBurn[i] / HUNDRED_PERCENT);
         }
+    }
 
+    // Buy SAFE for BUSD
+    // BUSD = SAFE * price() * 100.25%
+    // tax = BUSD * 0.25%
+    function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
+        console.log("buyExactAmountOfSafe");
+        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price();
+        console.log("usdPriceOfTokensToBuy", usdPriceOfTokensToBuy);
+        uint256 usdTax = usdPriceOfTokensToBuy * BUY_TAX_PERCENT / HUNDRED_PERCENT;
+        console.log("usdTax", usdTax);
+        uint256 usdToSpend = usdPriceOfTokensToBuy + usdTax;
+        console.log("usdToSpend", usdToSpend);
+        _mint(_msgSender(), _safeTokensToBuy);
+        usd.transferFrom(_msgSender(), address(this), usdToSpend);
+        safeVault.deposit(address(this), usdPriceOfTokensToBuy);
+        for (uint256 i = 0; i < WALLETS; i++) {
+            usd.transfer(wallets[i], usdTax * taxDistributionOnMintAndBurn[i] / HUNDRED_PERCENT);
+        }
+    }
+
+    function estimatBuyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
     }
 
     function sell(uint256 _safeTokensToSell) public {
-        uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() /  1e18;
+        uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e18;
         uint256 usdTax = usdPriceOfTokensToSell * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdToSpend = usdPriceOfTokensToSell + usdTax;
         _burn(_msgSender(), _safeTokensToSell);
         safeVault.withdraw(_msgSender(), usdPriceOfTokensToSell);
         safeVault.withdraw(address(this), usdTax);
         for (uint256 i = 0; i < WALLETS; i++) {
-            usd.transfer(wallets[i], usdTax * taxDistributionOnMint[i] / HUNDRED_PERCENT);
+            usd.transfer(wallets[i], usdTax * taxDistributionOnMintAndBurn[i] / HUNDRED_PERCENT);
         }
     }
 
@@ -172,7 +192,7 @@ contract SafeToken is ISafeToken, Proxied, Pausable {
     /* ============ View Functions ============ */
 
     function getUsdReserves() public view returns (uint256) {
-        return usd.balanceOf(address(this)) + safeVault.totalSupply();
+        return safeVault.totalSupply();
     }
 
     function price() public view returns (uint256) {

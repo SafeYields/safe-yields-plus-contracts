@@ -32,7 +32,6 @@ const mainnetAccounts = [
   process.env.LIQUIDITY_PRIVATE_KEY ?? '',
   process.env.INVESTMENTS_PRIVATE_KEY ?? '',
   process.env.MANAGEMENT_PRIVATE_KEY ?? '',
-  process.env.REFERRALS_PRIVATE_KEY ?? '',
 ];
 
 const MAINNET_BUSD_ADDRESS = '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56';
@@ -54,10 +53,6 @@ const accounts: HardhatNetworkAccountsUserConfig = [
   },
   {
     privateKey: process.env.MANAGEMENT_PRIVATE_KEY || '',
-    balance,
-  },
-  {
-    privateKey: process.env.REFERRALS_PRIVATE_KEY || '',
     balance,
   },
 ];
@@ -112,7 +107,7 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.LIVENET_MNEMONIC,
         path: "m/44'/60'/0'/0",
         initialIndex: 0,
-        count: 5,
+        count: 4,
       },
     },
     mainnet: {
@@ -126,7 +121,6 @@ const config: HardhatUserConfig = {
     liquidity: 1,
     investments: 2,
     management: 3,
-    referrals: 4,
     busd: {
       56: MAINNET_BUSD_ADDRESS,
       97: TESTNET_BUSD_ADDRESS,

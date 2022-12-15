@@ -33,7 +33,7 @@ export const displayDeployResult = (name: string, result: DeployResult) =>
 
 export const toWei = (value: number | string | BigNumber) => ethers.utils.parseEther(value.toString());
 export const fromWei = ethers.utils.formatEther;
-export const formattedFromWei = (value: BigNumberish) => Number(Number(fromWei(value)).toFixed(3));
+export const formattedFromWei = (value: BigNumberish) => Number(Number(fromWei(value)).toFixed(5));
 
 export const sayMaximumForMaxUint = (allowance: BigNumber) =>
   allowance.eq(ethers.constants.MaxUint256) ? chalk.magenta('Maximum') : fromWei(allowance);

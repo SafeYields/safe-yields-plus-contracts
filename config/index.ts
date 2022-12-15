@@ -3,22 +3,21 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 export const PERCENTAGE_PRECISION_MULTIPLIER = 100;
 export const percent = (value: number) => value * PERCENTAGE_PRECISION_MULTIPLIER;
-export const HUNDRED_PERCENT = percent(100);
+export const HUNDRED_PERCENT = percent(10000);
 
 export enum Wallets {
   LiquidityPool,
   InvestmentPool,
   Management,
-  referralProgram,
 }
 
 export const wallets = async (hre: HardhatRuntimeEnvironment): Promise<string[]> => {
-  const { liquidity, investments, management, referrals } = await hre.getNamedAccounts();
-  return [liquidity, investments, management, referrals];
+  const { liquidity, investments, management } = await hre.getNamedAccounts();
+  return [liquidity, investments, management];
 };
 
-export const taxDistributionForSafeToken = [percent(50), percent(29.5), percent(2), percent(0.5)];
-export const costDistributionForNFT = [percent(5), percent(70), percent(20), percent(5)];
+export const taxDistributionForSafeToken = [percent(50), percent(30), percent(20)];
+export const costDistributionForNFT = [percent(5), percent(75), percent(20)];
 
 export enum Tiers {
   Tier1,
