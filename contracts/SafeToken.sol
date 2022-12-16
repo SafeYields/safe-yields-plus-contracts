@@ -127,7 +127,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
     // tax = BUSD * 0.25%
     function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
         console.log("buyExactAmountOfSafe");
-        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price();
+        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e18   ;
         console.log("usdPriceOfTokensToBuy", usdPriceOfTokensToBuy);
         uint256 usdTax = usdPriceOfTokensToBuy * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         console.log("usdTax", usdTax);
@@ -136,18 +136,31 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         _mint(_msgSender(), _safeTokensToBuy);
         usd.transferFrom(_msgSender(), address(this), usdToSpend);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
-        safeVault.deposit(address(this), usdPriceOfTokensToBuy + usdTax - paid);
+                console.log("paid", paid);
+        safeVault.deposit(address(this), usdToSpend - paid);
     }
 
-    function estimatBuyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
+    function estimateBuyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
     }
 
-    function sell(uint256 _safeTokensToSell) public {
+    function sellExactAmountOfSafe(uint256 _safeTokensToSell) public {
         uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e18;
-        uint256 usdTax = usdPriceOfTokensToSell * BUY_TAX_PERCENT / HUNDRED_PERCENT;
+        uint256 usdTax = usdPriceOfTokensToSell * SELL_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdToSpend = usdPriceOfTokensToSell + usdTax;
         _burn(_msgSender(), _safeTokensToSell);
         safeVault.withdraw(_msgSender(), usdPriceOfTokensToSell);
+        safeVault.withdraw(address(this), usdTax);
+        uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
+        if (usdTax - paid > 0)
+            safeVault.withdraw(address(this), usdTax - paid);
+    }
+
+    function sellSafeForExactAmountOfUSD(uint256 _usdToGet) public {
+        uint256 usdToSpend = _usdToGet * (HUNDRED_PERCENT + SELL_TAX_PERCENT) / HUNDRED_PERCENT;
+        uint256 usdTax = usdToSpend * SELL_TAX_PERCENT / HUNDRED_PERCENT;
+        uint256 safeTokensToSell = (usdToSpend * 1e18) / price();
+        _burn(_msgSender(), safeTokensToSell);
+        safeVault.withdraw(_msgSender(), _usdToGet);
         safeVault.withdraw(address(this), usdTax);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
         if (usdTax - paid > 0)

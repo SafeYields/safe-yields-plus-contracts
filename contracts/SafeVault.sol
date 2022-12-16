@@ -30,7 +30,7 @@ contract SafeVault is ISafeVault, Proxied {
 
     function withdraw(address _receiver, uint256 _amount) external {
         require(_amount > 0, "SafeVault: amount must be greater than 0");
-        require(balances[msg.sender] >= _amount, "SafeVault: user balance must be greater than amount");
+        require(balances[msg.sender] >= _amount, "SafeVault: user balance is less than amount to withdraw");
         balances[msg.sender] -= _amount;
         totalSupply -= _amount;
         stableCoin.transfer(_receiver, _amount);

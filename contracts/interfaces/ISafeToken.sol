@@ -21,7 +21,9 @@ interface ISafeToken is IERC20, IERC20Metadata {
     *   @notice sell Safe Yield tokens for BUSD
     *   @param _safeTokensToSell number of tokens to sell, the respective amount of BUSD will be returned from the user, Safe Yield token will be burned
     */
-    function sell(uint256 _safeTokensToSell) external;
+    function sellExactAmountOfSafe(uint256 _safeTokensToSell) external;
+
+    function sellSafeForExactAmountOfUSD(uint256 _usdToGet) external;
 
     function mint(address usr, uint256 wad) external;
 
