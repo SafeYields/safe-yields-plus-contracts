@@ -14,7 +14,7 @@ const func: DeployFunction = async hre => {
   await deployAndTell(deploy, 'SafeNFT', {
     from: deployer,
     proxy: 'initialize',
-    args: ['', tierPriceNFT, token.address, costDistributionForNFT],
+    args: ['', Object.values(tierPriceNFT), token.address, Object.values(costDistributionForNFT)],
   });
 };
 export default func;

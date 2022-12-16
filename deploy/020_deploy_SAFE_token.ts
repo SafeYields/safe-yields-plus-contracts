@@ -11,7 +11,7 @@ const func: DeployFunction = async hre => {
 
   const vault = await hre.deployments.get('SafeVault');
 
-  const taxes = Object.entries(taxDistributionForSafeToken).map(([_key, value]) => value);
+  const taxes = Object.values(taxDistributionForSafeToken);
   const distributionWallets = await wallets(hre);
 
   await deployAndTell(deploy, 'SafeToken', {

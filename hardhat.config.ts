@@ -113,9 +113,8 @@ const config: HardhatUserConfig = {
   },
   namedAccounts: {
     deployer: 0,
-    liquidity: 1,
-    investments: 2,
-    management: 3,
+    investments: 1,
+    management: 2,
     busd: {
       56: MAINNET_BUSD_ADDRESS,
       97: TESTNET_BUSD_ADDRESS,
