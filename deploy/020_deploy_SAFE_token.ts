@@ -11,10 +11,13 @@ const func: DeployFunction = async hre => {
 
   const vault = await hre.deployments.get('SafeVault');
 
+  const taxes = Object.entries(taxDistributionForSafeToken).map(([_key, value]) => value);
+  const distributionWallets = await wallets(hre);
+
   await deployAndTell(deploy, 'SafeToken', {
     from: deployer,
     proxy: 'initialize',
-    args: [busd, vault.address, await wallets(hre), taxDistributionForSafeToken],
+    args: [busd, vault.address, distributionWallets, taxes],
   });
 };
 export default func;

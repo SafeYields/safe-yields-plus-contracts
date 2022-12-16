@@ -29,7 +29,6 @@ if (!explorerApiKey) {
 
 const mainnetAccounts = [
   process.env.DEPLOYER_PRIVATE_KEY ?? '',
-  process.env.LIQUIDITY_PRIVATE_KEY ?? '',
   process.env.INVESTMENTS_PRIVATE_KEY ?? '',
   process.env.MANAGEMENT_PRIVATE_KEY ?? '',
 ];
@@ -41,10 +40,6 @@ const balance = '100000000000000000000000';
 const accounts: HardhatNetworkAccountsUserConfig = [
   {
     privateKey: process.env.DEPLOYER_PRIVATE_KEY || '',
-    balance,
-  },
-  {
-    privateKey: process.env.LIQUIDITY_PRIVATE_KEY || '',
     balance,
   },
   {
@@ -107,7 +102,7 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.LIVENET_MNEMONIC,
         path: "m/44'/60'/0'/0",
         initialIndex: 0,
-        count: 4,
+        count: 3,
       },
     },
     mainnet: {

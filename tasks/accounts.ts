@@ -1,4 +1,4 @@
-import { Tiers } from '@config';
+import { NFTTiers } from '@config';
 import { SafeNFT, SafeVault } from '@contractTypes/contracts';
 import { ISafeToken } from '@contractTypes/contracts/interfaces';
 import { formattedFromWei, info, networkInfo } from '@utils/output.helper';
@@ -48,10 +48,10 @@ task('accounts', 'Get the address and balance information (BNB, SAFE, BUSD) for 
             BNB: formattedFromWei(await ethers.provider.getBalance(accountAddress)),
             BUSD: formattedFromWei(await busdContract.balanceOf(accountAddress)),
             SAFE: formattedFromWei(await tokenContract.balanceOf(accountAddress)),
-            SafeNFTTier1: Number(await nftContract.balanceOf(accountAddress, Tiers.Tier1)),
-            SafeNFTTier2: Number(await nftContract.balanceOf(accountAddress, Tiers.Tier2)),
-            SafeNFTTier3: Number(await nftContract.balanceOf(accountAddress, Tiers.Tier3)),
-            SafeNFTTier4: Number(await nftContract.balanceOf(accountAddress, Tiers.Tier4)),
+            SafeNFTTier1: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier1)),
+            SafeNFTTier2: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier2)),
+            SafeNFTTier3: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier3)),
+            SafeNFTTier4: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier4)),
           };
         }),
     );

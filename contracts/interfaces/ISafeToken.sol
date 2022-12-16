@@ -27,7 +27,7 @@ interface ISafeToken is IERC20, IERC20Metadata {
 
     function burn(address usr, uint256 wad) external;
 
-    function getWallets() external view returns (address[3] memory);
+    function getWallets() external view returns (address[2] memory);
 
     /**
     *   @notice price of 1 Safe Yield token in StableCoin
