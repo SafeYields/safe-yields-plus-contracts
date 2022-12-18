@@ -21,15 +21,19 @@ export const wallets = async (hre: HardhatRuntimeEnvironment): Promise<string[]>
   return [investments, management];
 };
 
-//the rest goes to teh vault
+//the rest goes to the vault
 export const taxDistributionForSafeToken: Distribution = {
   investments: percent(30),
   management: percent(20),
 };
 
-//the rest goes to teh vault
 export const costDistributionForNFT: Distribution = {
   investments: percent(75),
+  management: percent(20),
+};
+//the rest goes to teh vault
+export const profitDistributionForNFT: Distribution = {
+  investments: percent(25),
   management: percent(20),
 };
 
