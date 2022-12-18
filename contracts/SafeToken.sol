@@ -119,7 +119,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         _mint(_msgSender(), safeTokensToBuy);
         usd.transferFrom(_msgSender(), address(this), _usdToSpend);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
-        safeVault.deposit(address(this), usdToSwapForSafe + usdTax - paid);
+        safeVault.deposit(usdToSwapForSafe + usdTax - paid);
     }
 
     // Buy SAFE for BUSD
@@ -127,7 +127,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
     // tax = BUSD * 0.25%
     function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
         console.log("buyExactAmountOfSafe");
-        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e18   ;
+        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e18;
         console.log("usdPriceOfTokensToBuy", usdPriceOfTokensToBuy);
         uint256 usdTax = usdPriceOfTokensToBuy * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         console.log("usdTax", usdTax);
@@ -136,23 +136,32 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         _mint(_msgSender(), _safeTokensToBuy);
         usd.transferFrom(_msgSender(), address(this), usdToSpend);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
-                console.log("paid", paid);
-        safeVault.deposit(address(this), usdToSpend - paid);
+        console.log("paid", paid);
+        safeVault.deposit(usdToSpend - paid);
     }
 
     function estimateBuyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
     }
 
     function sellExactAmountOfSafe(uint256 _safeTokensToSell) public {
+        console.log("sellExactAmountOfSafe");
         uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e18;
+        console.log("usdPriceOfTokensToSell", usdPriceOfTokensToSell);
         uint256 usdTax = usdPriceOfTokensToSell * SELL_TAX_PERCENT / HUNDRED_PERCENT;
-        uint256 usdToSpend = usdPriceOfTokensToSell + usdTax;
+        console.log("usdTax", usdTax);
+        uint256 usdToReturn = usdPriceOfTokensToSell - usdTax;
+        console.log("usdToReturn", usdToReturn);
         _burn(_msgSender(), _safeTokensToSell);
+        console.log("burned tokens from _msgSender(): %s", _safeTokensToSell);
         safeVault.withdraw(_msgSender(), usdPriceOfTokensToSell);
-        safeVault.withdraw(address(this), usdTax);
+        console.log("withdrawn from vault usdPriceOfTokensToSell: %s", usdPriceOfTokensToSell);
+        usd.transferFrom(_msgSender(), address(this), usdTax);
+        console.log("transferred from the user usdTax: %s", usdTax);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
-        if (usdTax - paid > 0)
-            safeVault.withdraw(address(this), usdTax - paid);
+        console.log("usdTax - paid: %s", usdTax - paid);
+        if (usdTax - paid > 0) {
+            safeVault.deposit(usdTax - paid);
+        }
     }
 
     function sellSafeForExactAmountOfUSD(uint256 _usdToGet) public {
@@ -164,7 +173,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         safeVault.withdraw(address(this), usdTax);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
         if (usdTax - paid > 0)
-            safeVault.deposit(address(this), usdTax - paid);
+            safeVault.deposit(usdTax - paid);
     }
 
     function approve(address usr, uint256 wad) external returns (bool) {

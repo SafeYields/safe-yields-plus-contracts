@@ -14,11 +14,13 @@ const beTheWhale = async (hre: HardhatRuntimeEnvironment, accountToFund: string,
   });
   const whaleSigner = await hre.ethers.getSigner(accountToInpersonate);
   const signer = (await hre.ethers.getSigners())[0];
-  await signer.sendTransaction({
-    to: MAINNET_BUSD_WHALE_ADDRESS,
-    value: hre.ethers.utils.parseEther('1.0'),
-    gasLimit: 8_000_000,
-  });
+  await (
+    await signer.sendTransaction({
+      to: MAINNET_BUSD_WHALE_ADDRESS,
+      value: hre.ethers.utils.parseEther('1.0'),
+      gasLimit: 8_000_000,
+    })
+  ).wait();
 
   const { busd } = await hre.getNamedAccounts();
 
@@ -27,7 +29,7 @@ const beTheWhale = async (hre: HardhatRuntimeEnvironment, accountToFund: string,
     const toTransfer =
       (amountToTransfer && hre.ethers.utils.parseEther(amountToTransfer.toString())) ??
       (await contract.balanceOf(accountToInpersonate));
-    await contract.connect(whaleSigner).transfer(accountToFund, toTransfer);
+    await (await contract.connect(whaleSigner).transfer(accountToFund, toTransfer)).wait();
   }
 };
 

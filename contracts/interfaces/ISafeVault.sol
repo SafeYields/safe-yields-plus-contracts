@@ -7,7 +7,7 @@ pragma solidity >=0.8.17;
 interface ISafeVault {
 
     // @notice Deposit BUSD to the vault, spending should be approved if the user is not the sender
-    function deposit(address _user, uint256 _amount) external;
+    function deposit(uint256 _amount) external;
 
     // @notice Withdraw BUSD from the vault
     function withdraw(address _user, uint256 _amount) external;
