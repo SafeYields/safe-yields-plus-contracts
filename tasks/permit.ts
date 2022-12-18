@@ -15,25 +15,28 @@ export default task('permit', 'approve SafeToken to spend BUSD')
     const { getNamedAccounts, deployments, ethers } = hre;
     const { deployer, busd } = await getNamedAccounts();
     await networkInfo(hre, info);
-    const { address: spenderAddress } = await deployments.get('SafeToken');
+    const { address: spenderAddress1 } = await deployments.get('SafeToken');
+    const { address: spenderAddress2 } = await deployments.get('SafeNFT');
 
     const signer = user ?? deployer;
     info(`Signer ${signer}`);
     const busdContract = await ethers.getContractAt(erc20abi, busd);
 
     for (const token of [busdContract]) {
-      announce(`Approving spending of BUSD`);
-      let allowance = await token.allowance(signer, spenderAddress);
-      info(`Current allowance is ${sayMaximumForMaxUint(allowance)}`);
-      if (!allowance.eq(ethers.constants.MaxUint256)) {
-        info(`Calling approve for ${await token.name()}, max amount`);
-        await token.approve(spenderAddress, ethers.constants.MaxUint256);
-        allowance = await token.allowance(signer, spenderAddress);
-        success(
-          `Permission to spend granted to Safe Yields Token Contract deployed to ${spenderAddress}. Now allowance is ${sayMaximumForMaxUint(
-            allowance,
-          )}`,
-        );
+      for (const spenderAddress of [spenderAddress1, spenderAddress2]) {
+        announce(`Approving spending of BUSD`);
+        let allowance = await token.allowance(signer, spenderAddress);
+        info(`Current allowance is ${sayMaximumForMaxUint(allowance)}`);
+        if (!allowance.eq(ethers.constants.MaxUint256)) {
+          info(`Calling approve for ${await token.name()}, max amount`);
+          await token.approve(spenderAddress, ethers.constants.MaxUint256);
+          allowance = await token.allowance(signer, spenderAddress);
+          success(
+            `Permission to spend granted to the contract deployed to ${spenderAddress}. Now allowance is ${sayMaximumForMaxUint(
+              allowance,
+            )}`,
+          );
+        }
       }
     }
   });

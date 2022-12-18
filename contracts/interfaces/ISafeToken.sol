@@ -3,6 +3,7 @@ pragma solidity >=0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import "./ISafeVault.sol";
 
 /// @title  ISafeToken
 /// @author crypt0grapher
@@ -13,7 +14,7 @@ interface ISafeToken is IERC20, IERC20Metadata {
     *   @notice buySafeForExactAmountOfUSD Safe Yield tokens with BUSD
     *   @param _usdToSpend number of tokens to buy, the respective amount of BUSD will be deducted from the user, Safe Yield token will be minted
     */
-    function buySafeForExactAmountOfUSD(uint256 _usdToSpend) external;
+    function buySafeForExactAmountOfUSD(uint256 _usdToSpend) external returns (uint256);
 
     function buyExactAmountOfSafe(uint256 _safeTokensToBuy) external;
 
@@ -32,9 +33,15 @@ interface ISafeToken is IERC20, IERC20Metadata {
     function getWallets() external view returns (address[2] memory);
 
     /**
-    *   @notice price of 1 Safe Yield token in StableCoin
+    *   @notice Usd token (BUSD) contract
     */
     function usd() external view returns (IERC20);
+
+    /**
+*   @notice attached safe vault contract
+    */
+
+    function safeVault() external view returns (ISafeVault);
 
     /**
     *   @notice price of 1 Safe Yield token in StableCoin

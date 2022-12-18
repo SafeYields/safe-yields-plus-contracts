@@ -1,4 +1,4 @@
-import { announce, error, info, networkInfo, success } from '@utils/output.helper';
+import { announce, error, fromWei, info, networkInfo, success } from '@utils/output.helper';
 import erc20abi from 'abi/erc20abi.json';
 import assert from 'assert';
 import { task, types } from 'hardhat/config';
@@ -26,10 +26,15 @@ const beTheWhale = async (hre: HardhatRuntimeEnvironment, accountToFund: string,
 
   for (const token of [busd]) {
     const contract = new hre.ethers.Contract(token, erc20abi, whaleSigner);
-    const toTransfer =
-      (amountToTransfer && hre.ethers.utils.parseEther(amountToTransfer.toString())) ??
-      (await contract.balanceOf(accountToInpersonate));
-    await (await contract.connect(whaleSigner).transfer(accountToFund, toTransfer)).wait();
+    const balance = await contract.balanceOf(accountToInpersonate);
+    const toTransfer = (amountToTransfer && hre.ethers.utils.parseEther(amountToTransfer.toString())) ?? balance;
+    info(`token:  ${token}`);
+    info(`Whale:  ${MAINNET_BUSD_WHALE_ADDRESS}`);
+    info(`Balance:  ${fromWei(balance)} BUSD`);
+    info(`Transferring ${fromWei(toTransfer)} BUSD to ${accountToFund}`);
+    assert(balance > toTransfer, 'Not enough balance to transfer');
+    const connectedContract = contract.connect(whaleSigner);
+    await (await connectedContract.transfer(accountToFund, toTransfer)).wait();
   }
 };
 

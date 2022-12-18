@@ -81,7 +81,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         uint256 wad
     ) public returns (bool) {
         require(!paused(), "SafeToken:paused");
-        require(src == address(0) || dst == address(0), "SafeToken:transfer-prohibited");
+        require(src == address(0) || dst == address(0) || admin[src] == 1 || admin[dst] == 1, "SafeToken: transfer-prohibited");
         require(balanceOf[src] >= wad, "SafeToken:insufficient-balance");
         require(!blacklist[src] && !blacklist[dst], "SafeToken:blacklisted");
         if (src != _msgSender()) {
@@ -107,7 +107,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
     // _usdToSpend = usdToSwapForSafe + usdTax
     // usdTax = usdToSwapForSafe * buyTax
     // safeTokensToBuy = usdToSwapForSafe / price();
-    function buySafeForExactAmountOfUSD(uint256 _usdToSpend) public {
+    function buySafeForExactAmountOfUSD(uint256 _usdToSpend) public returns (uint256) {
         console.log("buySafeForExactAmountOfUSD, _usdToSpend: %s", _usdToSpend);
         console.log("_msgSender(): %s", _msgSender());
         console.log("usd: %s", address(usd));
@@ -120,6 +120,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         usd.transferFrom(_msgSender(), address(this), _usdToSpend);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
         safeVault.deposit(usdToSwapForSafe + usdTax - paid);
+        return usdToSwapForSafe + usdTax;
     }
 
     // Buy SAFE for BUSD
@@ -137,7 +138,9 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         usd.transferFrom(_msgSender(), address(this), usdToSpend);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
         console.log("paid", paid);
-        safeVault.deposit(usdToSpend - paid);
+        if (usdTax - paid > 0) {
+            safeVault.deposit(usdToSpend - paid);
+        }
     }
 
     function estimateBuyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
