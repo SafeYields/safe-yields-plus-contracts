@@ -51,4 +51,4 @@ export const tierPriceNFT: Record<keyof typeof NFTTiers, BigNumberish> = {
   Tier3: toWei(525),
   Tier4: toWei(1050),
 };
-export const tierSupplyNFT = [2000, 1000, 1000, 1000];
+export const tierMaxSupplyNFT = [2000, 1000, 1000, 1000];
