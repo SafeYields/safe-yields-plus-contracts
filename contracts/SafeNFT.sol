@@ -6,16 +6,16 @@ import '@openzeppelin/contracts/token/ERC1155/presets/ERC1155PresetMinterPauser.
 import '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol';
 import "hardhat-deploy/solc_0.8/proxy/Proxied.sol";
 import "./interfaces/ISafeToken.sol";
-import "./Wallets.sol";
+import "./interfaces/ISafeNFT.sol";
 import "./interfaces/ISafeVault.sol";
+import "./Wallets.sol";
 import "hardhat/console.sol";
 
 /// @title  Safe NFT
 /// @author crypt0grapher
-/// @notice This contract is responsible for $BUSD pool: mainly deposit/withdrawal and farms management
-contract SafeNFT is Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied {
+/// @notice Safe Yields NFT token based on ERC1155 standard, id [0..3] represents one of the 4 tiers
+contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied {
 
-    enum Tiers {Tier1, Tier2, Tier3, Tier4}
     uint256 public constant TIERS = 4;
     uint256[TIERS] public price;
     uint256[TIERS] public maxSupply;
@@ -25,7 +25,7 @@ contract SafeNFT is Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied {
     IERC20 public usd;
     string public constant name = "Safe Yields NFT";
 
-    // @notice Distribution percentages, multiplied by 10000, (25 stands for 0.25%)
+    // @dev Distribution percentages, multiplied by 10000, (25 stands for 0.25%)
     uint256[WALLETS] public priceDistributionOnMint;
     uint256[WALLETS] public profitDistribution;
 
@@ -72,11 +72,11 @@ contract SafeNFT is Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied {
         _mint(_msgSender(), id, _amount, "");
     }
 
-    function distributeProfit(uint256 _amountBUSD) public {
-        console.log("transferring usdPrice", _amountBUSD);
-        usd.transferFrom(_msgSender(), address(this), _amountBUSD);
-        uint256 rewards = _amountBUSD / 2;
-        uint256 toSellForSafe = _getTotalShare(_amountBUSD - rewards, profitDistribution);
+    function distributeRewards(uint256 _amountUSD) public {
+        console.log("transferring usdPrice", _amountUSD);
+        usd.transferFrom(_msgSender(), address(this), _amountUSD);
+        uint256 rewards = _amountUSD / 2;
+        uint256 toSellForSafe = _getTotalShare(_amountUSD - rewards, profitDistribution);
         console.log("transferring toSellForSafe", toSellForSafe);
         uint256 safeAmount = safeToken.buySafeForExactAmountOfUSD(toSellForSafe);
         console.log("safeAmount returned from ", safeAmount);
@@ -88,6 +88,18 @@ contract SafeNFT is Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied {
         if (balance > 0) {
             safeVault.deposit(balance);
         }
+    }
+
+    function claimReward() public {
+
+    }
+
+    function pendingRewards() external returns (uint256) {
+        return 0;
+    }
+
+    function percentOfTreasury() external returns (uint256) {
+        return 0;
     }
 
     function _afterTokenTransfer(
@@ -109,11 +121,11 @@ contract SafeNFT is Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied {
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) internal virtual  override(ERC1155PresetMinterPauser, ERC1155Supply) {
+    ) internal virtual override(ERC1155PresetMinterPauser, ERC1155Supply) {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, ERC1155PresetMinterPauser) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, ERC1155PresetMinterPauser, IERC165) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 

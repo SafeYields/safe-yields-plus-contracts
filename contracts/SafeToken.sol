@@ -156,9 +156,8 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         console.log("usdToReturn", usdToReturn);
         _burn(_msgSender(), _safeTokensToSell);
         console.log("burned tokens from _msgSender(): %s", _safeTokensToSell);
-        safeVault.withdraw(_msgSender(), usdPriceOfTokensToSell);
-        console.log("withdrawn from vault usdPriceOfTokensToSell: %s", usdPriceOfTokensToSell);
-        usd.transferFrom(_msgSender(), address(this), usdTax);
+        safeVault.withdraw(_msgSender(), usdToReturn);
+        safeVault.withdraw(address(this), usdTax);
         console.log("transferred from the user usdTax: %s", usdTax);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
         console.log("usdTax - paid: %s", usdTax - paid);
