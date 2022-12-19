@@ -29,7 +29,7 @@ if (!explorerApiKey) {
 
 const mainnetAccounts = [
   process.env.DEPLOYER_PRIVATE_KEY ?? '',
-  process.env.INVESTMENTS_PRIVATE_KEY ?? '',
+  process.env.TREASURY_PRIVATE_KEY ?? '',
   process.env.MANAGEMENT_PRIVATE_KEY ?? '',
 ];
 
@@ -43,7 +43,7 @@ const accounts: HardhatNetworkAccountsUserConfig = [
     balance,
   },
   {
-    privateKey: process.env.INVESTMENTS_PRIVATE_KEY || '',
+    privateKey: process.env.TREASURY_PRIVATE_KEY || '',
     balance,
   },
   {
@@ -113,7 +113,7 @@ const config: HardhatUserConfig = {
   },
   namedAccounts: {
     deployer: 0,
-    investments: 1,
+    treasury: 1,
     management: 2,
     busd: {
       56: MAINNET_BUSD_ADDRESS,

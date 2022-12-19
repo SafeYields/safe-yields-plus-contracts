@@ -16,7 +16,7 @@ contract Wallets {
     /// @dev the order is extremely important once deployed, see configuration scripts
     // rewards distribution is the balance of SafeNFT,
     enum WalletsUsed {
-        InvestmentPool,
+        Treasury,
         Management
     }
 
