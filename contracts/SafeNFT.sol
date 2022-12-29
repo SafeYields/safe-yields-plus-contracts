@@ -29,6 +29,21 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     uint256[WALLETS] public priceDistributionOnMint;
     uint256[WALLETS] public profitDistribution;
 
+    uint256 public currentDistributionId;
+    // @dev distributionId => distribution amount in USD
+    mapping(uint256 => uint256) public distributionOfProfit;
+    // @dev mapping of distributions to amount to distributed by tiers (not necessarily claimed)
+    mapping(uint256 => uint256[TIERS]) public distributionByTier;
+    // @dev helper mapping of distributions to the the current erc1155 total supply snapshot on the moment of the distribution (per each tier)
+    mapping(uint256 => uint256[TIERS]) public distributionTotalSupplySnapshot;
+    // @dev distributionId => tier => account => alreadyDistributedAmount
+    mapping(uint256 => mapping(uint256 => mapping(address => uint256))) public alreadyDistributedAmount;
+    // @dev distributionId => tier => amount
+    mapping(uint256 => uint256[TIERS]) public alreadyDistributedAmountByTier;
+
+
+    /* ============ External and Public State Changing Functions ============ */
+
     function initialize(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256[WALLETS] memory _profitDistribution) public proxied {
         _setURI(_uri);
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
@@ -45,6 +60,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         usd.approve(address(safeToken), type(uint256).max);
         usd.approve(address(safeVault), type(uint256).max);
         safeToken.approve(address(safeToken), type(uint256).max);
+        currentDistributionId = 0;
     }
 
     constructor(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256[WALLETS] memory _profitDistribution) ERC1155PresetMinterPauser(_uri) {
@@ -72,7 +88,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         _mint(_msgSender(), id, _amount, "");
     }
 
-    function distributeRewards(uint256 _amountUSD) public {
+    function distributeProfit(uint256 _amountUSD) public {
         console.log("transferring usdPrice", _amountUSD);
         usd.transferFrom(_msgSender(), address(this), _amountUSD);
         uint256 rewards = _amountUSD / 2;
@@ -81,20 +97,79 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         uint256 safeAmount = safeToken.buySafeForExactAmountOfUSD(toSellForSafe);
         console.log("safeAmount returned from ", safeAmount);
         uint256 amountDistributed = _distribute(safeToken, safeAmount, profitDistribution);
-
-        ///todo agree on the distribution routine and implement it, is it by the amount of NFTs or by the amount of BUSD in the pool?
-
+        currentDistributionId++;
+        distributionOfProfit[currentDistributionId] = amountDistributed;
+        uint256 totalSupplyAllTiers = getTotalSupplyAllTiers();
+        for (uint256 i = 0; i < TIERS; i++) {
+            uint256 supply = totalSupply(i);
+            distributionTotalSupplySnapshot[currentDistributionId][i] = supply;
+            distributionByTier[currentDistributionId][i] = rewards * supply / totalSupplyAllTiers;
+        }
         uint256 balance = usd.balanceOf(address(this));
         if (balance > 0) {
             safeVault.deposit(balance);
         }
     }
 
-    function claimReward() public {
+    function claimReward(Tiers _tier, uint256 _distributionId) public {
+        address user = _msgSender();
+        uint256 reward = getPendingRewards(user, _tier, _distributionId);
+        usd.transfer(user, reward);
+        alreadyDistributedAmount[_distributionId][uint256(_tier)][user] += reward;
+    }
+
+    function claimRewardsTotal() public {
+        for (uint256 tier = 0; tier < TIERS; tier++)
+            for (uint256 distributionId = 0; distributionId <= currentDistributionId; distributionId++)
+                claimReward(Tiers(tier), distributionId);
+    }
+
+
+    /* ============ External and Public View Functions ============ */
+
+    function getPrice(Tiers _tier) public view returns (uint256) {
+        return price[uint256(_tier)];
+    }
+    function getFairPrice(Tiers _tier) public view returns (uint256) {
+        return price[uint256(_tier)] + distributionByTier[currentDistributionId][uint256(_tier)] / totalSupply(uint256(_tier));
+    }
+
+    function getTotalSupplyAllTiers() public returns (uint256) {
+        uint256 totalSupply_ = 0;
+        for (uint256 i = 0; i < TIERS; i++) {
+            totalSupply_ += totalSupply(i);
+        }
+        return totalSupply_;
+    }
+
+
+    function getMyPendingRewardsTotal() external returns (uint256) {
+        address user = _msgSender();
+        uint256 rewards = 0;
+        for (uint256 tier = 0; tier < TIERS; tier++)
+            for (uint256 distributionId = 0; distributionId <= currentDistributionId; distributionId++)
+                rewards += getPendingRewards(user, Tiers(tier), distributionId);
+        return rewards;
+    }
+
+    function getPendingRewards(address _user, Tiers _tier, uint256 _distributionId) public returns (uint256) {
+        uint256 tier = uint256(_tier);
+        uint256 rewardsForTier = distributionByTier[currentDistributionId][tier];
+        // user's rewards is the % of the total rewards for the tier
+        uint256 rewardsForBalance = rewardsForTier * balanceOf(_user, tier) / totalSupply(tier);
+        return rewardsForBalance - alreadyDistributedAmount[_distributionId][tier][_user];
+    }
+
+    function getUnclaimedRewards() public returns (uint256) {
+        uint undistributed = 0;
+        for (uint256 i = 0; i < TIERS; i++)
+            for (uint256 distributionId = 0; distributionId <= currentDistributionId; distributionId++)
+                undistributed += distributionByTier[distributionId][i] - alreadyDistributedAmountByTier[distributionId][i];
+        return undistributed;
 
     }
 
-    function pendingRewards() external returns (uint256) {
+    function getTreasuryCost() external returns (uint256) {
         return 0;
     }
 

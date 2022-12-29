@@ -94,6 +94,7 @@
     "access": "public"
   },
   "scripts": {
+    "abi": "hardhat abi",
     "clean": "shx rm -rf ./artifacts ./cache ./coverage ./types ./coverage.json && yarn typechain",
     "docs": "hardhat docgen",
     "commit": "git-cz",

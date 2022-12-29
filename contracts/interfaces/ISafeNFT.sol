@@ -2,7 +2,11 @@
 pragma solidity >=0.8.17;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-
+//  ____         __       __   ___      _     _
+//  /___|  __ _ / _| ___  \ \ / (_) ___| | __| |___
+// \___ \ / _` | |_ / _ \  \ V /| |/ _ \ |/ _` / __|
+//  ___) | (_| |  _|  __/   | | | |  __/ | (_| \__ \
+// |____/ \__,_|_|  \___|   |_| |_|\___|_|\__,_|___/
 
 /// @title  ISafeVault
 /// @author crypt0grapher
@@ -18,21 +22,61 @@ interface ISafeNFT is IERC1155 {
     function buy(Tiers _tier, uint256 _amount) external;
 
     /**
-    *   @notice distribute profit among the NFT holders, the function just fixes the amount of the reward currently deposited to the
+    *   @notice distribute profit among the NFT holders, the function fixes the amount of the reward and the NFT holders and their shares at the moment of the call. It does not transfer the reward to the NFT holders, it just records the amount of the reward for each NFT holder.
     *   @param _amountUSD amount of USD to distribute
     */
-    function distributeRewards(uint256 _amountUSD) external;
+    function distributeProfit(uint256 _amountUSD) external;
 
     /**
-    *   @notice claims NFT rewards for the caller of the function
+    *   @notice the function calculates the amount of the reward for the NFT holder and transfers it to the NFT holder
     */
-    function claimReward() external;
+    function claimReward(Tiers _tier, uint256 _distributionId) external;
+
+    /**
+*   @notice the function calculates the amount of the reward for the NFT holder and transfers it to the NFT holder
+    */
+    function claimRewardsTotal() external;
+
+    /**
+    *   @notice gets NFT price in USD
+    *   @return returns Rewards set for distribution
+    */
+    function getPrice(Tiers _tier) external returns (uint256);
+
+
+    /**
+    *   @notice gets NFT fair price in USD
+    *   @return counts not only the sale price but also share of the profit for the tier
+    */
+    function getFairPrice(Tiers _tier) external returns (uint256);
+
+    /**
+    *   @notice gets the current distribution number
+    *   @return current distribution number, the one that assigned to the latest distribution
+    */
+    function currentDistributionId() external returns (uint256);
+
+    /**
+    *   @notice undistributed profit amount in USD
+    *   @return amount of the rewards not yet distributed to NFT holders
+    */
+    function getUnclaimedRewards() external returns (uint256);
+
 
     /**
     *   @notice returns the amount of the reward share for the NFT holder
     */
-    function pendingRewards() external returns (uint256);
+    function getMyPendingRewardsTotal() external returns (uint256);
 
+    /**
+    *   @notice returns the amount of the reward share for the NFT holder
+    */
+    function getPendingRewards(address _user, Tiers _tier, uint256 _distributionId)  external returns (uint256);
+
+    /**
+    *   @notice gets the total usd value of the NFT minted
+    */
+    function getTreasuryCost() external returns (uint256);
     /**
     *   @notice gets the share of the NFTs of the caller to the treasury
     */
