@@ -36,4 +36,16 @@ describe('SafeNFT', () => {
         });
       });
   });
+
+  describe('getFairPrice(Tiers _tier)', () => {
+    Object.entries(NFTTiers)
+      .filter(([_, value]) => isNaN(Number(value)))
+      .forEach(([tierId, tierName]) => {
+        it(`should return a correct price for ${tierName}`, async () => {
+          expect(await safeNFTContract.getFairPrice(tierId)).to.be.equal(
+            tierPriceNFT[tierName as keyof typeof NFTTiers],
+          );
+        });
+      });
+  });
 });

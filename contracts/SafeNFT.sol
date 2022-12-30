@@ -131,7 +131,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         return price[uint256(_tier)];
     }
     function getFairPrice(Tiers _tier) public view returns (uint256) {
-        return price[uint256(_tier)] + distributionByTier[currentDistributionId][uint256(_tier)] / totalSupply(uint256(_tier));
+        return price[uint256(_tier)] + distributionByTier[currentDistributionId][uint256(_tier)] / (totalSupply(uint256(_tier)) == 0 ? 1 : totalSupply(uint256(_tier)));
     }
 
     function getTotalSupplyAllTiers() public returns (uint256) {
