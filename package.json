@@ -113,6 +113,7 @@
     "console": "hardhat console --network",
     "dev": "yarn hardhat fund --network localhost && yarn hardhat init --network localhost && yarn hardhat permit --network localhost && yarn console localhost",
     "deploy": "hardhat deploy --write true --network",
+    "test": "cross-env HIDE_DEPLOY_LOG=true HIDE_TASK_LOG=true OPTIMIZER_DISABLED=true DEBUG='safe:*' hardhat test",
     "conf": "hardhat config --network",
     "accounts": "hardhat accounts --network",
     "deployments": "hardhat deployments --network"
