@@ -37,6 +37,13 @@ interface ISafeNFT is IERC1155 {
     */
     function claimRewardsTotal() external;
 
+
+    /**
+    *   @notice gets NFT price for all tiers in USD
+    */
+    function getFairPriceTable() external returns (uint256[] memory);
+
+
     /**
     *   @notice gets NFT price in USD
     *   @return returns Rewards set for distribution
@@ -78,8 +85,8 @@ interface ISafeNFT is IERC1155 {
     */
     function getTreasuryCost() external returns (uint256);
     /**
-    *   @notice gets the share of the NFTs of the caller to the treasury
+    *   @notice **Your NFTs (% Treasury) **is calculated in $ as a relation of total price of NFTs possessed by the $ amount of Investment Pool - including its SAFE and BUSD components.
     */
-    function percentOfTreasury() external returns (uint256);
+    function getMyShareOfTreasury() external returns (uint256);
 
 }

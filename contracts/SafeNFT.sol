@@ -127,9 +127,19 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
     /* ============ External and Public View Functions ============ */
 
+
+    function getFairPriceTable() public view returns (uint256[] memory) {
+        uint256[] memory priceTable = new uint256[](TIERS);
+        for (uint256 i = 0; i < TIERS; i++) {
+            priceTable[i] = getFairPrice(Tiers(i));
+        }
+        return priceTable;
+    }
+
     function getPrice(Tiers _tier) public view returns (uint256) {
         return price[uint256(_tier)];
     }
+
     function getFairPrice(Tiers _tier) public view returns (uint256) {
         return price[uint256(_tier)] + distributionByTier[currentDistributionId][uint256(_tier)] / (totalSupply(uint256(_tier)) == 0 ? 1 : totalSupply(uint256(_tier)));
     }
@@ -170,11 +180,16 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     }
 
     function getTreasuryCost() external returns (uint256) {
-        return 0;
+        return usd.balanceOf(wallets[uint256(WalletsUsed.Treasury)]) + safeToken.balanceOf(wallets[uint256(WalletsUsed.Treasury)]) * safeToken.getUSDPrice() / 1e18;
     }
 
-    function percentOfTreasury() external returns (uint256) {
-        return 0;
+    function getMyShareOfTreasury() external returns (uint256) {
+        address user = _msgSender();
+        uint treasuryShare = 0;
+        for (uint256 tier = 0; tier < TIERS; tier++)
+            treasuryShare += balanceOf(user, tier) * price[tier];
+        uint256 treasuryCost = getTreasuryCost();
+        return (treasuryCost == 0) ? 0 : treasuryShare / treasuryCost;
     }
 
     function _afterTokenTransfer(
