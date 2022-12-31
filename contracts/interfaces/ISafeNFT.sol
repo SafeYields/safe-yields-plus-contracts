@@ -41,52 +41,52 @@ interface ISafeNFT is IERC1155 {
     /**
     *   @notice gets NFT price for all tiers in USD
     */
-    function getFairPriceTable() external returns (uint256[] memory);
+    function getFairPriceTable() external view returns (uint256[] memory);
 
 
     /**
     *   @notice gets NFT price in USD
     *   @return returns Rewards set for distribution
     */
-    function getPrice(Tiers _tier) external returns (uint256);
+    function getPrice(Tiers _tier) external view returns (uint256);
 
 
     /**
     *   @notice gets NFT fair price in USD
     *   @return counts not only the sale price but also share of the profit for the tier
     */
-    function getFairPrice(Tiers _tier) external returns (uint256);
+    function getFairPrice(Tiers _tier) external view returns (uint256);
 
     /**
     *   @notice gets the current distribution number
     *   @return current distribution number, the one that assigned to the latest distribution
     */
-    function currentDistributionId() external returns (uint256);
+    function currentDistributionId() external view returns (uint256);
 
     /**
     *   @notice undistributed profit amount in USD
     *   @return amount of the rewards not yet distributed to NFT holders
     */
-    function getUnclaimedRewards() external returns (uint256);
+    function getUnclaimedRewards() external view returns (uint256);
 
 
     /**
     *   @notice returns the amount of the reward share for the NFT holder
     */
-    function getMyPendingRewardsTotal() external returns (uint256);
+    function getMyPendingRewardsTotal() external view returns (uint256);
 
     /**
     *   @notice returns the amount of the reward share for the NFT holder
     */
-    function getPendingRewards(address _user, Tiers _tier, uint256 _distributionId)  external returns (uint256);
+    function getPendingRewards(address _user, Tiers _tier, uint256 _distributionId)  external view returns (uint256);
 
     /**
     *   @notice gets the total usd value of the NFT minted
     */
-    function getTreasuryCost() external returns (uint256);
+    function getTreasuryCost() external view returns (uint256);
     /**
     *   @notice **Your NFTs (% Treasury) **is calculated in $ as a relation of total price of NFTs possessed by the $ amount of Investment Pool - including its SAFE and BUSD components.
     */
-    function getMyShareOfTreasury() external returns (uint256);
+    function getMyShareOfTreasury() external view returns (uint256);
 
 }

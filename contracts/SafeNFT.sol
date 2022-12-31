@@ -144,7 +144,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         return price[uint256(_tier)] + distributionByTier[currentDistributionId][uint256(_tier)] / (totalSupply(uint256(_tier)) == 0 ? 1 : totalSupply(uint256(_tier)));
     }
 
-    function getTotalSupplyAllTiers() public returns (uint256) {
+    function getTotalSupplyAllTiers() public view returns (uint256) {
         uint256 totalSupply_ = 0;
         for (uint256 i = 0; i < TIERS; i++) {
             totalSupply_ += totalSupply(i);
@@ -153,7 +153,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     }
 
 
-    function getMyPendingRewardsTotal() external returns (uint256) {
+    function getMyPendingRewardsTotal() public view returns (uint256) {
         address user = _msgSender();
         uint256 rewards = 0;
         for (uint256 tier = 0; tier < TIERS; tier++)
@@ -162,7 +162,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         return rewards;
     }
 
-    function getPendingRewards(address _user, Tiers _tier, uint256 _distributionId) public returns (uint256) {
+    function getPendingRewards(address _user, Tiers _tier, uint256 _distributionId) public view returns (uint256) {
         uint256 tier = uint256(_tier);
         uint256 rewardsForTier = distributionByTier[currentDistributionId][tier];
         // user's rewards is the % of the total rewards for the tier
@@ -170,7 +170,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         return rewardsForBalance - alreadyDistributedAmount[_distributionId][tier][_user];
     }
 
-    function getUnclaimedRewards() public returns (uint256) {
+    function getUnclaimedRewards() public view returns (uint256) {
         uint undistributed = 0;
         for (uint256 i = 0; i < TIERS; i++)
             for (uint256 distributionId = 0; distributionId <= currentDistributionId; distributionId++)
@@ -179,11 +179,11 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
     }
 
-    function getTreasuryCost() public returns (uint256) {
+    function getTreasuryCost() public view returns (uint256) {
         return usd.balanceOf(wallets[uint256(WalletsUsed.Treasury)]) + safeToken.balanceOf(wallets[uint256(WalletsUsed.Treasury)]) * safeToken.price() / 1e18;
     }
 
-    function getMyShareOfTreasury() public returns (uint256) {
+    function getMyShareOfTreasury() public view returns (uint256) {
         address user = _msgSender();
         uint treasuryShare = 0;
         for (uint256 tier = 0; tier < TIERS; tier++)
