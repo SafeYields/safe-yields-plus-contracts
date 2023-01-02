@@ -11,7 +11,7 @@ import "./interfaces/ISafeVault.sol";
 /// @notice This contract is responsible for $BUSD pool: mainly deposit/withdrawal and farms management
 contract SafeVault is ISafeVault, Proxied {
     IERC20 stableCoin;
-    uint256 public totalSupply;
+    uint256 public deposited;
     mapping(address => uint256) public balances;
 
     function initialize(address _stableCoin) public proxied {
@@ -22,13 +22,17 @@ contract SafeVault is ISafeVault, Proxied {
         initialize(_stableCoin);
     }
 
+    function totalSupply() external view returns (uint256) {
+        return stableCoin.balanceOf(address(this));
+    }
+
     function deposit(uint256 _amount) external {
         console.log("SafeVault.deposit");
         require(_amount > 0, "SafeVault: amount must be greater than 0");
         console.log("SafeVault.deposit: _amount", _amount);
         console.log("SafeVault.deposit: _user", msg.sender);
         balances[msg.sender] += _amount;
-        totalSupply += _amount;
+        deposited += _amount;
         stableCoin.transferFrom(msg.sender, address(this), _amount);
     }
 
@@ -40,7 +44,7 @@ contract SafeVault is ISafeVault, Proxied {
         require(_amount > 0, "SafeVault: amount must be greater than 0");
         require(balances[msg.sender] >= _amount, "SafeVault: user balance is less than amount to withdraw");
         balances[msg.sender] -= _amount;
-        totalSupply -= _amount;
+        deposited -= _amount;
         stableCoin.transfer(_receiver, _amount);
     }
 
