@@ -166,7 +166,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         uint256 tier = uint256(_tier);
         uint256 rewardsForTier = distributionByTier[currentDistributionId][tier];
         // user's rewards is the % of the total rewards for the tier
-        uint256 rewardsForBalance = rewardsForTier * balanceOf(_user, tier) / totalSupply(tier);
+        uint256 rewardsForBalance = totalSupply(tier) == 0 ? 0 : rewardsForTier * balanceOf(_user, tier) / totalSupply(tier);
         return rewardsForBalance - alreadyDistributedAmount[_distributionId][tier][_user];
     }
 
