@@ -4,7 +4,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import erc20abi from '../abi/erc20abi.json';
 
-export default task('permit', 'approve SafeToken to spend BUSD')
+export default task('permit', 'approve SafeToken to spend USDC')
   .addOptionalParam(
     'user',
     'an address to permit to (should be impersonated earlier with get-some-gems for localhost forking mainent)',
@@ -13,18 +13,18 @@ export default task('permit', 'approve SafeToken to spend BUSD')
   )
   .setAction(async ({ user }, hre: HardhatRuntimeEnvironment) => {
     const { getNamedAccounts, deployments, ethers } = hre;
-    const { deployer, busd } = await getNamedAccounts();
+    const { deployer, usdc } = await getNamedAccounts();
     await networkInfo(hre, info);
     const { address: spenderAddress1 } = await deployments.get('SafeToken');
     const { address: spenderAddress2 } = await deployments.get('SafeNFT');
 
     const signer = user ?? deployer;
     info(`Signer ${signer}`);
-    const busdContract = await ethers.getContractAt(erc20abi, busd);
+    const usdcContract = await ethers.getContractAt(erc20abi, usdc);
 
-    for (const token of [busdContract]) {
+    for (const token of [usdcContract]) {
       for (const spenderAddress of [spenderAddress1, spenderAddress2]) {
-        announce(`Approving spending of BUSD`);
+        announce(`Approving spending of USDC`);
         let allowance = await token.allowance(signer, spenderAddress);
         info(`Current allowance is ${sayMaximumForMaxUint(allowance)}`);
         if (!allowance.eq(ethers.constants.MaxUint256)) {

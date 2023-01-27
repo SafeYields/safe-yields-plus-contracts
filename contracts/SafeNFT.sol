@@ -126,7 +126,19 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
 
     /* ============ External and Public View Functions ============ */
+    function getBalanceTable(address _user) public view returns (uint256[] memory) {
+        uint256[] memory priceTable = new uint256[](TIERS);
+        for (uint256 i = 0; i < TIERS; i++) {
+            priceTable[i] = balanceOf(_user, i);
+        }
+        return priceTable;
+    }
 
+
+    function getMyBalanceTable() public view returns (uint256[] memory) {
+        address user = _msgSender();
+        return getBalanceTable(user);
+    }
 
     function getFairPriceTable() public view returns (uint256[] memory) {
         uint256[] memory priceTable = new uint256[](TIERS);

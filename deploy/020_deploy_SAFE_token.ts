@@ -7,7 +7,7 @@ const func: DeployFunction = async hre => {
     deployments: { deploy },
   } = hre;
 
-  const { deployer, busd } = await hre.getNamedAccounts();
+  const { deployer, usdc } = await hre.getNamedAccounts();
 
   const vault = await hre.deployments.get('SafeVault');
 
@@ -17,7 +17,7 @@ const func: DeployFunction = async hre => {
   await deployAndTell(deploy, 'SafeToken', {
     from: deployer,
     proxy: 'initialize',
-    args: [busd, vault.address, distributionWallets, taxes],
+    args: [usdc, vault.address, distributionWallets, taxes],
   });
 };
 export default func;

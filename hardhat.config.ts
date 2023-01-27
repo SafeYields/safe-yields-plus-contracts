@@ -19,12 +19,11 @@ import 'tsconfig-paths/register';
 import * as tasks from './tasks';
 
 dotenvConfig({ path: resolve(__dirname, './.env') });
-export const mainnetJsonRPCUrl: string = process.env.MAINNET_RPC_URL || 'https://bsc-dataseed1.ninicoin.io/';
-export const testnetJsonRPCUrl: string =
-  process.env.TESTNET_RPC_URL || 'https://data-seed-prebsc-1-s1.binance.org:8545/';
-const explorerApiKey: string | undefined = process.env.BSCSCAN_API_KEY;
+export const mainnetJsonRPCUrl: string = process.env.MAINNET_RPC_URL || 'https://arb1.arbitrum.io/rpc';
+export const testnetJsonRPCUrl: string = process.env.TESTNET_RPC_URL || 'https://goerli-rollup.arbitrum.io/rpc';
+const explorerApiKey: string | undefined = process.env.ARBISCAN_API_KEY;
 if (!explorerApiKey) {
-  console.log("BSCSCAN_API_KEY not set in an .env file, deployment verification won't be available");
+  console.log("ARBISCAN_API_KEY not set in an .env file, deployment verification won't be available");
 }
 
 const mainnetAccounts = [
@@ -33,8 +32,8 @@ const mainnetAccounts = [
   process.env.MANAGEMENT_PRIVATE_KEY ?? '',
 ];
 
-const MAINNET_BUSD_ADDRESS = '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56';
-const TESTNET_BUSD_ADDRESS = '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee';
+const MAINNET_USDC_ADDRESS = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8';
+const TESTNET_USDC_ADDRESS = '0x179522635726710dd7d2035a81d856de4aa7836c';
 
 const balance = '100000000000000000000000';
 const accounts: HardhatNetworkAccountsUserConfig = [
@@ -66,8 +65,8 @@ const config: HardhatUserConfig = {
     currency: 'USD',
     enabled: !!process.env.REPORT_GAS,
     coinmarketcap: '399a40d3-ac4e-4c92-8f6d-fe901ef01ef0',
-    gasPriceApi: 'https://api.bscscan.com/api?module=proxy&action=eth_gasPrice',
-    token: 'BNB',
+    gasPriceApi: 'https://api.arbiscan.com/api?module=proxy&action=eth_gasPrice',
+    token: 'ETH',
   },
   mocha: {
     timeout: 100000,
@@ -96,7 +95,7 @@ const config: HardhatUserConfig = {
       accounts: mainnetAccounts,
     },
     testnet: {
-      chainId: 97,
+      chainId: 421613,
       url: testnetJsonRPCUrl,
       accounts: {
         mnemonic: process.env.LIVENET_MNEMONIC,
@@ -106,7 +105,7 @@ const config: HardhatUserConfig = {
       },
     },
     mainnet: {
-      chainId: 56,
+      chainId: 42161,
       url: mainnetJsonRPCUrl,
       accounts: mainnetAccounts,
     },
@@ -115,10 +114,10 @@ const config: HardhatUserConfig = {
     deployer: 0,
     treasury: 1,
     management: 2,
-    busd: {
-      56: MAINNET_BUSD_ADDRESS,
-      97: TESTNET_BUSD_ADDRESS,
-      1337: MAINNET_BUSD_ADDRESS,
+    usdc: {
+      42161: MAINNET_USDC_ADDRESS,
+      421613: TESTNET_USDC_ADDRESS,
+      1337: MAINNET_USDC_ADDRESS,
     },
   },
   solidity: {

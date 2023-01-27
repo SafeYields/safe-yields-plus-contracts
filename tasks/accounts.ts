@@ -5,7 +5,7 @@ import { formattedFromWei, info, networkInfo } from '@utils/output.helper';
 import erc20abi from 'abi/erc20abi.json';
 import { task } from 'hardhat/config';
 
-task('accounts', 'Get the address and balance information (BNB, SAFE, BUSD) for the accounts.')
+task('accounts', 'Get the address and balance information (BNB, SAFE, USDC) for the accounts.')
   .addOptionalParam('user', '0x... address to check')
   .setAction(async ({ user }, hre) => {
     const {
@@ -17,10 +17,10 @@ task('accounts', 'Get the address and balance information (BNB, SAFE, BUSD) for 
       },
     } = hre;
     const namedAccounts = await getNamedAccounts();
-    const { busd } = namedAccounts;
+    const { usdc } = namedAccounts;
     await networkInfo(hre, info);
     info('\n 📡 Querying balances...');
-    const busdContract = await ethers.getContractAt(erc20abi, busd);
+    const usdcContract = await ethers.getContractAt(erc20abi, usdc);
 
     const tokenDeployment = await deployments.get('SafeToken');
     const nftDeployment = await deployments.get('SafeNFT');
@@ -46,7 +46,7 @@ task('accounts', 'Get the address and balance information (BNB, SAFE, BUSD) for 
             name: accountName,
             address: accountAddress,
             BNB: formattedFromWei(await ethers.provider.getBalance(accountAddress)),
-            BUSD: formattedFromWei(await busdContract.balanceOf(accountAddress)),
+            USDC: formattedFromWei(await usdcContract.balanceOf(accountAddress)),
             SAFE: formattedFromWei(await tokenContract.balanceOf(accountAddress)),
             SafeNFTTier1: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier1)),
             SafeNFTTier2: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier2)),

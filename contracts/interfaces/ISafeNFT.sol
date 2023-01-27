@@ -39,7 +39,19 @@ interface ISafeNFT is IERC1155 {
 
 
     /**
+    *   @notice gets NFT balance for all tiers
+    */
+    function getMyBalanceTable() external view returns (uint256[] memory);
+
+    /**
+    *   @notice gets NFT balance for all tiers
+    */
+    function getBalanceTable(address _user) external view returns (uint256[] memory);
+
+
+    /**
     *   @notice gets NFT price for all tiers in USD
+    ///todo in SAFE!
     */
     function getFairPriceTable() external view returns (uint256[] memory);
 
@@ -85,7 +97,7 @@ interface ISafeNFT is IERC1155 {
     */
     function getTreasuryCost() external view returns (uint256);
     /**
-    *   @notice **Your NFTs (% Treasury) **is calculated in $ as a relation of total price of NFTs possessed by the $ amount of Investment Pool - including its SAFE and BUSD components.
+    *   @notice **Your NFTs (% Treasury) **is calculated in $ as a relation of total price of NFTs possessed by the $ amount of Investment Pool - including its SAFE and USDC components.
     */
     function getMyShareOfTreasury() external view returns (uint256);
 

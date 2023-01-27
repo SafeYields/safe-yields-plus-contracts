@@ -8,7 +8,7 @@ import "./interfaces/ISafeVault.sol";
 
 /// @title  Safe Vault
 /// @author crypt0grapher
-/// @notice This contract is responsible for $BUSD pool: mainly deposit/withdrawal and farms management
+/// @notice This contract is responsible for $USDC pool: mainly deposit/withdrawal and farms management
 contract SafeVault is ISafeVault, Proxied {
     IERC20 stableCoin;
     uint256 public deposited;

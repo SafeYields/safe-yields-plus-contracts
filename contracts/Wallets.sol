@@ -31,7 +31,7 @@ contract Wallets {
         uint256 amountPaid = 0;
         for (uint256 i = 0; i < WALLETS; i++) {
             uint256 amount = (_amount * walletPercentageDistribution[i]) / HUNDRED_PERCENT;
-            console.log("sending %s to %s", amountPaid, wallets[i]);
+            console.log("sending %s to %s", amount, wallets[i]);
             _paymentToken.transfer(wallets[i], amount);
             amountPaid += amount;
         }

@@ -123,9 +123,9 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         return usdToSwapForSafe + usdTax;
     }
 
-    // Buy SAFE for BUSD
-    // BUSD = SAFE * price() * 100.25%
-    // tax = BUSD * 0.25%
+    // Buy SAFE for USDC
+    // USDC = SAFE * price() * 100.25%
+    // tax = USDC * 0.25%
     function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
         console.log("buyExactAmountOfSafe");
         uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e18;

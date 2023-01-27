@@ -22,7 +22,7 @@ describe('SafeNFT', () => {
     safeTokenContract = await ethers.getContract<ISafeToken>('SafeToken');
     safeNFTContract = await ethers.getContract<ISafeNFT>('SafeNFT');
     namedAccounts = await hardhat.getNamedAccounts();
-    usdContract = await ethers.getContractAt(erc20abi, namedAccounts.busd);
+    usdContract = await ethers.getContractAt(erc20abi, namedAccounts.usdc);
     user = namedAccounts.deployer;
     otherUser = (await hardhat.getUnnamedAccounts())[0];
   });

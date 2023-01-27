@@ -36,3 +36,4 @@ yarn-error.log*
 # Docs
 docs
 /.env.fuji
+.DS_Store

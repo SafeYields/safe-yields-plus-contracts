@@ -4,10 +4,10 @@ import assert from 'assert';
 import { task, types } from 'hardhat/config';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
-const MAINNET_BUSD_WHALE_ADDRESS = '0x8894e0a0c962cb723c1976a4421c95949be2d4e3';
+const MAINNET_USDC_WHALE_ADDRESS = '0x8894e0a0c962cb723c1976a4421c95949be2d4e3';
 
 const beTheWhale = async (hre: HardhatRuntimeEnvironment, accountToFund: string, amountToTransfer?: number) => {
-  const accountToInpersonate = MAINNET_BUSD_WHALE_ADDRESS;
+  const accountToInpersonate = MAINNET_USDC_WHALE_ADDRESS;
   await hre.network.provider.request({
     method: 'hardhat_impersonateAccount',
     params: [accountToInpersonate],
@@ -16,32 +16,32 @@ const beTheWhale = async (hre: HardhatRuntimeEnvironment, accountToFund: string,
   const signer = (await hre.ethers.getSigners())[0];
   await (
     await signer.sendTransaction({
-      to: MAINNET_BUSD_WHALE_ADDRESS,
+      to: MAINNET_USDC_WHALE_ADDRESS,
       value: hre.ethers.utils.parseEther('1.0'),
       gasLimit: 8_000_000,
     })
   ).wait();
 
-  const { busd } = await hre.getNamedAccounts();
+  const { usdc } = await hre.getNamedAccounts();
 
-  for (const token of [busd]) {
+  for (const token of [usdc]) {
     const contract = new hre.ethers.Contract(token, erc20abi, whaleSigner);
     const balance = await contract.balanceOf(accountToInpersonate);
     const toTransfer = (amountToTransfer && hre.ethers.utils.parseEther(amountToTransfer.toString())) ?? balance;
     info(`token:  ${token}`);
-    info(`Whale:  ${MAINNET_BUSD_WHALE_ADDRESS}`);
-    info(`Balance:  ${fromWei(balance)} BUSD`);
-    info(`Transferring ${fromWei(toTransfer)} BUSD to ${accountToFund}`);
+    info(`Whale:  ${MAINNET_USDC_WHALE_ADDRESS}`);
+    info(`Balance:  ${fromWei(balance)} USDC`);
+    info(`Transferring ${fromWei(toTransfer)} USDC to ${accountToFund}`);
     assert(balance > toTransfer, 'Not enough balance to transfer');
     const connectedContract = contract.connect(whaleSigner);
     await (await connectedContract.transfer(accountToFund, toTransfer)).wait();
   }
 };
 
-export default task('fund', 'get BUSD from a whale')
+export default task('fund', 'get USDC from a whale')
   .addOptionalParam(
     'account',
-    "The named account to get BUSD, e.g. 'management', 'vault', or 'all'",
+    "The named account to get USDC, e.g. 'management', 'vault', or 'all'",
     'deployer',
     types.string,
   )
@@ -61,8 +61,8 @@ export default task('fund', 'get BUSD from a whale')
     const accounts = user ? [user] : account === 'all' ? Object.values(namedAccounts) : [namedAccounts[account]];
 
     for (const account of accounts) {
-      announce(`Funding ${account} with ${amount.toLocaleString()} BUSD...`);
+      announce(`Funding ${account} with ${amount.toLocaleString()} USDC...`);
       await beTheWhale(hre, account, amount);
-      success(`${amount.toLocaleString()} BUSD has been sent to ${account}`);
+      success(`${amount.toLocaleString()} USDC has been sent to ${account}`);
     }
   });

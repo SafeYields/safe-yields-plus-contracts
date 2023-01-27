@@ -6,12 +6,12 @@ const func: DeployFunction = async hre => {
     deployments: { deploy },
   } = hre;
 
-  const { deployer, busd } = await hre.getNamedAccounts();
+  const { deployer, usdc } = await hre.getNamedAccounts();
 
   await deployAndTell(deploy, 'SafeVault', {
     from: deployer,
     proxy: 'initialize',
-    args: [busd],
+    args: [usdc],
   });
 };
 export default func;
