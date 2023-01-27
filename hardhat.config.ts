@@ -65,7 +65,7 @@ const config: HardhatUserConfig = {
     currency: 'USD',
     enabled: !!process.env.REPORT_GAS,
     coinmarketcap: '399a40d3-ac4e-4c92-8f6d-fe901ef01ef0',
-    gasPriceApi: 'https://api.arbiscan.com/api?module=proxy&action=eth_gasPrice',
+    gasPriceApi: 'https://api.etherscan.io/api?module=proxy&action=eth_gasPrice',
     token: 'ETH',
   },
   mocha: {
