@@ -57,8 +57,15 @@ interface ISafeNFT is IERC1155 {
 
 
     /**
+    *   @notice gets all NFT prices in USD
+    *   @return returns all NFT prices in one table in USD
+    */
+    function getPriceTable() external view returns (uint256[] memory);
+
+
+    /**
     *   @notice gets NFT price in USD
-    *   @return returns Rewards set for distribution
+    *   @return NFT price in USD
     */
     function getPrice(Tiers _tier) external view returns (uint256);
 

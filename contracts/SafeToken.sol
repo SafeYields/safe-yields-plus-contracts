@@ -114,7 +114,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         uint256 usdToSwapForSafe = _usdToSpend * (HUNDRED_PERCENT - BUY_TAX_PERCENT) / HUNDRED_PERCENT;
         uint256 usdTax = usdToSwapForSafe * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         console.log("usdTax", usdTax);
-        uint256 safeTokensToBuy = (usdToSwapForSafe * 1e18) / price();
+        uint256 safeTokensToBuy = (usdToSwapForSafe * 1e6) / price();
         console.log("safeTokensToBuy", safeTokensToBuy);
         _mint(_msgSender(), safeTokensToBuy);
         usd.transferFrom(_msgSender(), address(this), _usdToSpend);
@@ -128,7 +128,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
     // tax = USDC * 0.25%
     function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
         console.log("buyExactAmountOfSafe");
-        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e18;
+        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e6;
         console.log("usdPriceOfTokensToBuy", usdPriceOfTokensToBuy);
         uint256 usdTax = usdPriceOfTokensToBuy * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         console.log("usdTax", usdTax);
@@ -148,7 +148,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
 
     function sellExactAmountOfSafe(uint256 _safeTokensToSell) public {
         console.log("sellExactAmountOfSafe");
-        uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e18;
+        uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e6;
         console.log("usdPriceOfTokensToSell", usdPriceOfTokensToSell);
         uint256 usdTax = usdPriceOfTokensToSell * SELL_TAX_PERCENT / HUNDRED_PERCENT;
         console.log("usdTax", usdTax);
@@ -169,7 +169,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
     function sellSafeForExactAmountOfUSD(uint256 _usdToGet) public {
         uint256 usdToSpend = _usdToGet * (HUNDRED_PERCENT + SELL_TAX_PERCENT) / HUNDRED_PERCENT;
         uint256 usdTax = usdToSpend * SELL_TAX_PERCENT / HUNDRED_PERCENT;
-        uint256 safeTokensToSell = (usdToSpend * 1e18) / price();
+        uint256 safeTokensToSell = (usdToSpend * 1e6) / price();
         _burn(_msgSender(), safeTokensToSell);
         safeVault.withdraw(_msgSender(), _usdToGet);
         safeVault.withdraw(address(this), usdTax);
@@ -204,7 +204,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
     }
 
     function price() public view returns (uint256) {
-        return (totalSupply == 0) ? 1e18 : getUsdReserves() * 1e18 / totalSupply;
+        return (totalSupply == 0) ? 1e6 : getUsdReserves() * 1e6 / totalSupply;
     }
 
     /* ============ Internal Functions ============ */

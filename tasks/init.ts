@@ -26,7 +26,7 @@ export default task('init', 'funds th vault with 1 usdc and mints 1 safe to set 
       info('Depositing 1 USDC to the vault...');
       const safeVaultUSDCBalance = await usdcContract.balanceOf(safeVaultContract.address);
       if (safeVaultUSDCBalance.eq(ethers.constants.Zero)) {
-        (await safeVaultContract.deposit(toWei(1))).wait;
+        (await safeVaultContract.deposit(toWei(1, 6))).wait;
         success('Done.');
       } else error('USDC already deposited to the vault. Skipping depositing.');
     }

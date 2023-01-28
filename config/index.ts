@@ -46,9 +46,9 @@ export enum NFTTiers {
 
 // export const tierPriceNFT = [toWei(131.25), toWei(262.5), toWei(525), toWei(1050)];
 export const tierPriceNFT: Record<keyof typeof NFTTiers, BigNumberish> = {
-  Tier1: toWei(131.25),
-  Tier2: toWei(262.5),
-  Tier3: toWei(525),
-  Tier4: toWei(1050),
+  Tier1: toWei(131.25, 6),
+  Tier2: toWei(262.5, 6),
+  Tier3: toWei(525, 6),
+  Tier4: toWei(1050, 6),
 };
 export const tierMaxSupplyNFT = [2000, 1000, 1000, 1000];

@@ -140,6 +140,14 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         return getBalanceTable(user);
     }
 
+    function getPriceTable() public view returns (uint256[] memory) {
+        uint256[] memory priceTable = new uint256[](TIERS);
+        for (uint256 i = 0; i < TIERS; i++) {
+            priceTable[i] = price[i];
+        }
+        return priceTable;
+    }
+
     function getFairPriceTable() public view returns (uint256[] memory) {
         uint256[] memory priceTable = new uint256[](TIERS);
         for (uint256 i = 0; i < TIERS; i++) {
@@ -192,7 +200,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     }
 
     function getTreasuryCost() public view returns (uint256) {
-        return usd.balanceOf(wallets[uint256(WalletsUsed.Treasury)]) + safeToken.balanceOf(wallets[uint256(WalletsUsed.Treasury)]) * safeToken.price() / 1e18;
+        return usd.balanceOf(wallets[uint256(WalletsUsed.Treasury)]) + safeToken.balanceOf(wallets[uint256(WalletsUsed.Treasury)]) * safeToken.price() / 1e6;
     }
 
     function getMyShareOfTreasury() public view returns (uint256) {

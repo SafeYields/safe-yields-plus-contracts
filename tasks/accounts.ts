@@ -1,21 +1,14 @@
 import { NFTTiers } from '@config';
 import { SafeNFT, SafeVault } from '@contractTypes/contracts';
 import { ISafeToken } from '@contractTypes/contracts/interfaces';
-import { formattedFromWei, info, networkInfo } from '@utils/output.helper';
+import { formattedFromWei, fromWei, info, networkInfo } from '@utils/output.helper';
 import erc20abi from 'abi/erc20abi.json';
 import { task } from 'hardhat/config';
 
-task('accounts', 'Get the address and balance information (BNB, SAFE, USDC) for the accounts.')
+task('accounts', 'Get the address and balance information (ETH, SAFE, USDC) for the accounts.')
   .addOptionalParam('user', '0x... address to check')
   .setAction(async ({ user }, hre) => {
-    const {
-      getNamedAccounts,
-      deployments,
-      ethers,
-      ethers: {
-        utils: { formatEther: fromWei },
-      },
-    } = hre;
+    const { getNamedAccounts, deployments, ethers } = hre;
     const namedAccounts = await getNamedAccounts();
     const { usdc } = namedAccounts;
     await networkInfo(hre, info);
@@ -45,8 +38,8 @@ task('accounts', 'Get the address and balance information (BNB, SAFE, USDC) for 
           return {
             name: accountName,
             address: accountAddress,
-            BNB: formattedFromWei(await ethers.provider.getBalance(accountAddress)),
-            USDC: formattedFromWei(await usdcContract.balanceOf(accountAddress)),
+            ETH: formattedFromWei(await ethers.provider.getBalance(accountAddress)),
+            USDC: formattedFromWei(await usdcContract.balanceOf(accountAddress), 6),
             SAFE: formattedFromWei(await tokenContract.balanceOf(accountAddress)),
             SafeNFTTier1: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier1)),
             SafeNFTTier2: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier2)),
@@ -58,5 +51,5 @@ task('accounts', 'Get the address and balance information (BNB, SAFE, USDC) for 
     console.table(table);
 
     info(`Vault totalSupply: ${fromWei(await vaultContract.totalSupply())}`);
-    info(`Safe price: ${fromWei(await tokenContract.price())}`);
+    info(`Safe price: ${fromWei(await tokenContract.price(), 6)}`);
   });

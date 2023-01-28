@@ -31,9 +31,11 @@ export const displayDeployResult = (name: string, result: DeployResult) =>
     ? deployWarning(`Re-used existing ${name} at ${result.address}`)
     : deploySuccess(`${name} deployed at ${result.address}`);
 
-export const toWei = (value: number | string | BigNumber) => ethers.utils.parseEther(value.toString());
-export const fromWei = ethers.utils.formatEther;
-export const formattedFromWei = (value: BigNumberish) => Number(Number(fromWei(value)).toFixed(5));
+export const toWei = (value: number | string | BigNumber, decimals = 18) =>
+  ethers.utils.parseUnits(value.toString(), decimals);
+export const fromWei = (value: BigNumberish, decimals = 18) => ethers.utils.formatUnits(value, decimals);
+export const formattedFromWei = (value: BigNumberish, decimals = 18) =>
+  Number(Number(fromWei(value, decimals)).toFixed(5));
 
 export const sayMaximumForMaxUint = (allowance: BigNumber) =>
   allowance.eq(ethers.constants.MaxUint256) ? chalk.magenta('Maximum') : fromWei(allowance);
