@@ -7,9 +7,9 @@ type Distribution = {
   management: BigNumberish;
 };
 
-export const PERCENTAGE_PRECISION_MULTIPLIER = 100;
+export const PERCENTAGE_PRECISION_MULTIPLIER = 1_000_000;
 export const percent = (value: number) => value * PERCENTAGE_PRECISION_MULTIPLIER;
-export const HUNDRED_PERCENT = percent(10000);
+export const HUNDRED_PERCENT = percent(100);
 
 export enum Wallets {
   Treasury,
@@ -19,6 +19,11 @@ export enum Wallets {
 export const wallets = async (hre: HardhatRuntimeEnvironment): Promise<string[]> => {
   const { treasury, management } = await hre.getNamedAccounts();
   return [treasury, management];
+};
+
+export const tax = {
+  buyTaxPercent: percent(0.25),
+  sellTaxPercent: percent(0.25),
 };
 
 //the rest goes to the vault

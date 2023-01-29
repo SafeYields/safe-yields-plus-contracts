@@ -1,6 +1,7 @@
 import { announce, error, fromWei, info, networkInfo, success, toWei } from '@utils/output.helper';
 import erc20abi from 'abi/erc20abi.json';
 import assert from 'assert';
+import { BigNumber } from 'ethers';
 import { task, types } from 'hardhat/config';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
@@ -33,7 +34,7 @@ const beTheWhale = async (hre: HardhatRuntimeEnvironment, accountToFund: string,
     info(`Whale:  ${MAINNET_USDC_WHALE_ADDRESS}`);
     info(`Balance:  ${fromWei(balance, 6)} USDC`);
     info(`Transferring ${fromWei(toTransfer, 6)} USDC to ${accountToFund}`);
-    assert(balance > toTransfer, 'Not enough balance to transfer');
+    assert(BigNumber.from(balance).gte(toTransfer), 'Not enough balance to transfer');
     const connectedContract = contract.connect(whaleSigner);
     await (await connectedContract.transfer(accountToFund, toTransfer)).wait();
   }

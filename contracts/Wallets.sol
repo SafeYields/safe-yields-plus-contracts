@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 
 contract Wallets {
-    uint256 constant HUNDRED_PERCENT = 10000;
+    uint256 constant HUNDRED_PERCENT = 100_000_000;
 
     /// @dev total wallets on the protocol, see Wallets enum
     uint256 public constant WALLETS = 2;

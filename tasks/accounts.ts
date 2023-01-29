@@ -38,8 +38,8 @@ task('accounts', 'Get the address and balance information (ETH, SAFE, USDC) for 
           return {
             name: accountName,
             address: accountAddress,
-            ETH: formattedFromWei(await ethers.provider.getBalance(accountAddress)),
-            USDC: formattedFromWei(await usdcContract.balanceOf(accountAddress), 6),
+            ETH: formattedFromWei(await ethers.provider.getBalance(accountAddress), 18),
+            USDC: formattedFromWei(await usdcContract.balanceOf(accountAddress)),
             SAFE: formattedFromWei(await tokenContract.balanceOf(accountAddress)),
             SafeNFTTier1: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier1)),
             SafeNFTTier2: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier2)),
@@ -50,6 +50,6 @@ task('accounts', 'Get the address and balance information (ETH, SAFE, USDC) for 
     );
     console.table(table);
 
-    info(`Vault totalSupply: ${fromWei(await vaultContract.totalSupply())}`);
+    info(`Vault totalSupply: ${fromWei(await vaultContract.totalSupply(), 6)}`);
     info(`Safe price: ${fromWei(await tokenContract.price(), 6)}`);
   });
