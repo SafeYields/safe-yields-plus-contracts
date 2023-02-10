@@ -5,6 +5,7 @@ import "./interfaces/ISafeToken.sol";
 import "./interfaces/ISafeVault.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "hardhat-deploy/solc_0.8/proxy/Proxied.sol";
 import "hardhat/console.sol";
 import "./Wallets.sol";
@@ -12,7 +13,7 @@ import "./Wallets.sol";
 /// @title  SafeToken
 /// @author crypt0grapher
 /// @notice This contract is used as a token
-contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
+contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
     // @notice ERC20 token data
     string public constant name = "Safe Yields Token";
     string public constant symbol = "SAFE";
@@ -81,7 +82,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         address src,
         address dst,
         uint256 wad
-    ) public returns (bool) {
+    ) public nonReentrant returns (bool) {
         require(!paused(), "SafeToken:paused");
         require(src == address(0) || dst == address(0) || admin[src] == 1 || admin[dst] == 1, "SafeToken: transfer-prohibited");
         require(balanceOf[src] >= wad, "SafeToken:insufficient-balance");
@@ -109,7 +110,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
     // _usdToSpend = usdToSwapForSafe + usdTax
     // usdTax = usdToSwapForSafe * buyTax
     // safeTokensToBuy = usdToSwapForSafe / price();
-    function buySafeForExactAmountOfUSD(uint256 _usdToSpend) public returns (uint256) {
+    function buySafeForExactAmountOfUSD(uint256 _usdToSpend) public nonReentrant returns (uint256) {
         console.log("buySafeForExactAmountOfUSD, _usdToSpend: %s", _usdToSpend);
         console.log("_msgSender(): %s", _msgSender());
         console.log("usd: %s", address(usd));
@@ -129,7 +130,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
     // Buy SAFE for USDC
     // USDC = SAFE * price() * 100.25%
     // tax = USDC * 0.25%
-    function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
+    function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public nonReentrant {
         console.log("buyExactAmountOfSafe");
         uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e6;
         console.log("usdPriceOfTokensToBuy", usdPriceOfTokensToBuy);
@@ -149,7 +150,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
     function estimateBuyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
     }
 
-    function sellExactAmountOfSafe(uint256 _safeTokensToSell) public {
+    function sellExactAmountOfSafe(uint256 _safeTokensToSell) public nonReentrant {
         console.log("sellExactAmountOfSafe");
         uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e6;
         console.log("usdPriceOfTokensToSell", usdPriceOfTokensToSell);
@@ -169,7 +170,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable {
         }
     }
 
-    function sellSafeForExactAmountOfUSD(uint256 _usdToGet) public {
+    function sellSafeForExactAmountOfUSD(uint256 _usdToGet) public nonReentrant {
         uint256 usdToSpend = _usdToGet * (HUNDRED_PERCENT + SELL_TAX_PERCENT) / HUNDRED_PERCENT;
         uint256 usdTax = usdToSpend * SELL_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 safeTokensToSell = (usdToSpend * 1e6) / price();

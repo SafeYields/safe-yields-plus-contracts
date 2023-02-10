@@ -4,6 +4,7 @@ pragma solidity >=0.8.17;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import '@openzeppelin/contracts/token/ERC1155/presets/ERC1155PresetMinterPauser.sol';
 import '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol';
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "hardhat-deploy/solc_0.8/proxy/Proxied.sol";
 import "./interfaces/ISafeToken.sol";
 import "./interfaces/ISafeNFT.sol";
@@ -14,7 +15,7 @@ import "hardhat/console.sol";
 /// @title  Safe NFT
 /// @author crypt0grapher
 /// @notice Safe Yields NFT token based on ERC1155 standard, id [0..3] represents one of the 4 tiers
-contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied {
+contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied, ReentrancyGuard  {
 
     uint256 public constant TIERS = 4;
     uint256[TIERS] public price;
@@ -69,7 +70,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         initialize(_uri, _price, _maxSupply, _safeToken, _priceDistributionOnMint, _referralShareForNFTPurchase, _profitDistribution);
     }
 
-    function buy(Tiers _tier, uint256 _amount, address _referral) public {
+    function buy(Tiers _tier, uint256 _amount, address _referral) public nonReentrant {
         console.log("buying NFT");
         require(_amount > 0, "ERC1155PresetMinterPauser: amount must be greater than 0");
         ///todo check on totalsupply per tier
@@ -98,7 +99,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         _mint(_msgSender(), id, _amount, "");
     }
 
-    function distributeProfit(uint256 _amountUSD) public {
+    function distributeProfit(uint256 _amountUSD) public nonReentrant {
         console.log("transferring usdPrice", _amountUSD);
         usd.transferFrom(_msgSender(), address(this), _amountUSD);
         uint256 rewards = _amountUSD / 2;
@@ -121,14 +122,14 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         }
     }
 
-    function claimReward(Tiers _tier, uint256 _distributionId) public {
+    function claimReward(Tiers _tier, uint256 _distributionId) public nonReentrant {
         address user = _msgSender();
         uint256 reward = getPendingRewards(user, _tier, _distributionId);
         usd.transfer(user, reward);
         alreadyDistributedAmount[_distributionId][uint256(_tier)][user] += reward;
     }
 
-    function claimRewardsTotal() public {
+    function claimRewardsTotal() public nonReentrant {
         for (uint256 tier = 0; tier < TIERS; tier++)
             for (uint256 distributionId = 0; distributionId <= currentDistributionId; distributionId++)
                 claimReward(Tiers(tier), distributionId);
