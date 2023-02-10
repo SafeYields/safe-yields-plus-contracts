@@ -18,8 +18,9 @@ interface ISafeNFT is IERC1155 {
     *   @notice purchase Safe NFT for exact amount of USD
     *   @param _tier tier of the NFT to purchase which stands for ERC1155 token id [0..3]
     *   @param _amount amount of USD to spend
+    *   @param _referral referral getting 5% of the price
     */
-    function buy(Tiers _tier, uint256 _amount) external;
+    function buy(Tiers _tier, uint256 _amount, address _referral) external;
 
     /**
     *   @notice distribute profit among the NFT holders, the function fixes the amount of the reward and the NFT holders and their shares at the moment of the call. It does not transfer the reward to the NFT holders, it just records the amount of the reward for each NFT holder.

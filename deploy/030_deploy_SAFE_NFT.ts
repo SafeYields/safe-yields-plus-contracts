@@ -1,4 +1,10 @@
-import { costDistributionForNFT, profitDistributionForNFT, tierMaxSupplyNFT, tierPriceNFT } from '@config';
+import {
+  costDistributionForNFT,
+  profitDistributionForNFT,
+  referralShareForNFTPurchase,
+  tierMaxSupplyNFT,
+  tierPriceNFT,
+} from '@config';
 import { deployAndTell } from '@utils/deployFunc';
 import { DeployFunction } from 'hardhat-deploy/types';
 
@@ -20,6 +26,7 @@ const func: DeployFunction = async hre => {
       Object.values(tierMaxSupplyNFT),
       token.address,
       Object.values(costDistributionForNFT),
+      referralShareForNFTPurchase,
       Object.values(profitDistributionForNFT),
     ],
   });

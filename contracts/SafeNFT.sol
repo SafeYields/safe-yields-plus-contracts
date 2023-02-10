@@ -28,6 +28,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     // @dev Distribution percentages, multiplied by 10000, (25 stands for 0.25%)
     uint256[WALLETS] public priceDistributionOnMint;
     uint256[WALLETS] public profitDistribution;
+    uint256 public referralShareForNFTPurchase;
 
     uint256 public currentDistributionId;
     // @dev distributionId => distribution amount in USD
@@ -44,7 +45,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
     /* ============ External and Public State Changing Functions ============ */
 
-    function initialize(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256[WALLETS] memory _profitDistribution) public proxied {
+    function initialize(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256 _referralShareForNFTPurchase, uint256[WALLETS] memory _profitDistribution) public proxied {
         _setURI(_uri);
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(MINTER_ROLE, _msgSender());
@@ -53,6 +54,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         maxSupply = _maxSupply;
         safeToken = _safeToken;
         priceDistributionOnMint = _priceDistributionOnMint;
+        referralShareForNFTPurchase = _referralShareForNFTPurchase;
         profitDistribution = _profitDistribution;
         _setWallets(safeToken.getWallets());
         safeVault = safeToken.safeVault();
@@ -63,24 +65,32 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         currentDistributionId = 0;
     }
 
-    constructor(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256[WALLETS] memory _profitDistribution) ERC1155PresetMinterPauser(_uri) {
-        initialize(_uri, _price, _maxSupply, _safeToken, _priceDistributionOnMint, _profitDistribution);
+    constructor(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256 _referralShareForNFTPurchase, uint256[WALLETS] memory _profitDistribution) ERC1155PresetMinterPauser(_uri) {
+        initialize(_uri, _price, _maxSupply, _safeToken, _priceDistributionOnMint, _referralShareForNFTPurchase, _profitDistribution);
     }
 
-    function buy(Tiers _tier, uint256 _amount) public {
+    function buy(Tiers _tier, uint256 _amount, address _referral) public {
         console.log("buying NFT");
         require(_amount > 0, "ERC1155PresetMinterPauser: amount must be greater than 0");
         ///todo check on totalsupply per tier
         require(price[uint256(_tier)] > 0, "ERC1155PresetMinterPauser: tier price must be greater than 0");
+        bool referralExists = _referral != address(0);
         uint256 id = uint256(_tier);
         uint256 usdPrice = price[uint256(_tier)] * _amount;
         console.log("transferring usdPrice", usdPrice);
         usd.transferFrom(_msgSender(), address(this), usdPrice);
-        uint256 toSellForSafe = _getTotalShare(usdPrice, priceDistributionOnMint);
+        uint256 toSellForSafe = _getTotalShare(usdPrice, priceDistributionOnMint, referralExists ? referralShareForNFTPurchase : 0);
         console.log("transferring toSellForSafe", toSellForSafe);
         uint256 safeAmount = safeToken.buySafeForExactAmountOfUSD(toSellForSafe);
         console.log("safeAmount returned from ", safeAmount);
         uint256 amountDistributed = _distribute(safeToken, safeAmount, priceDistributionOnMint);
+        console.log("transferred to protocol wallets", amountDistributed);
+        if (referralExists) {
+            uint256 referralFee = _transferPercent(safeToken, safeAmount, _referral, referralShareForNFTPurchase);
+            console.log("referral fee", referralFee);
+            amountDistributed += referralFee;
+            }
+        console.log("total transferred to wallets", amountDistributed);
         uint256 balance = usd.balanceOf(address(this));
         if (balance > 0) {
             safeVault.deposit(balance);
@@ -92,7 +102,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         console.log("transferring usdPrice", _amountUSD);
         usd.transferFrom(_msgSender(), address(this), _amountUSD);
         uint256 rewards = _amountUSD / 2;
-        uint256 toSellForSafe = _getTotalShare(_amountUSD - rewards, profitDistribution);
+        uint256 toSellForSafe = _getTotalShare(_amountUSD - rewards, profitDistribution, 0);
         console.log("transferring toSellForSafe", toSellForSafe);
         uint256 safeAmount = safeToken.buySafeForExactAmountOfUSD(toSellForSafe);
         console.log("safeAmount returned from ", safeAmount);
