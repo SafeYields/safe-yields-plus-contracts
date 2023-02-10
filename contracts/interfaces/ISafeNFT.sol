@@ -14,11 +14,13 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 interface ISafeNFT is IERC1155 {
     enum Tiers {Tier1, Tier2, Tier3, Tier4}
 
+    event TogglePresale(bool _status);
+
     /**
     *   @notice purchase Safe NFT for exact amount of USD
     *   @param _tier tier of the NFT to purchase which stands for ERC1155 token id [0..3]
     *   @param _amount amount of USD to spend
-    *   @param _referral referral getting 5% of the price
+    *   @param _referral referral getting 5% of the price, should not be the sender, if not specified, goes to treasury
     */
     function buy(Tiers _tier, uint256 _amount, address _referral) external;
 

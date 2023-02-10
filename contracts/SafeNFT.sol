@@ -15,7 +15,7 @@ import "hardhat/console.sol";
 /// @title  Safe NFT
 /// @author crypt0grapher
 /// @notice Safe Yields NFT token based on ERC1155 standard, id [0..3] represents one of the 4 tiers
-contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied, ReentrancyGuard  {
+contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied, ReentrancyGuard {
 
     uint256 public constant TIERS = 4;
     uint256[TIERS] public price;
@@ -31,6 +31,9 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     uint256[WALLETS] public profitDistribution;
     uint256 public referralShareForNFTPurchase;
 
+    // @dev Presale status, if true, only whitelisted addresses can mint
+    bool public presale;
+
     uint256 public currentDistributionId;
     // @dev distributionId => distribution amount in USD
     mapping(uint256 => uint256) public distributionOfProfit;
@@ -43,6 +46,12 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     // @dev distributionId => tier => amount
     mapping(uint256 => uint256[TIERS]) public alreadyDistributedAmountByTier;
 
+
+    /* ============ Modifiers ============ */
+    modifier onlyAdmin() {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "ERC1155PresetMinterPauser: must have admin role");
+        _;
+    }
 
     /* ============ External and Public State Changing Functions ============ */
 
@@ -70,28 +79,44 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         initialize(_uri, _price, _maxSupply, _safeToken, _priceDistributionOnMint, _referralShareForNFTPurchase, _profitDistribution);
     }
 
+    function togglePresale() public onlyAdmin {
+        presale = !presale;
+        emit TogglePresale(presale);
+    }
+
+
     function buy(Tiers _tier, uint256 _amount, address _referral) public nonReentrant {
         console.log("buying NFT");
         require(_amount > 0, "ERC1155PresetMinterPauser: amount must be greater than 0");
         ///todo check on totalsupply per tier
         require(price[uint256(_tier)] > 0, "ERC1155PresetMinterPauser: tier price must be greater than 0");
         bool referralExists = _referral != address(0);
+        require(!referralExists || referralExists && _referral != _msgSender(), "Referral must be different from sender");
         uint256 id = uint256(_tier);
         uint256 usdPrice = price[uint256(_tier)] * _amount;
         console.log("transferring usdPrice", usdPrice);
         usd.transferFrom(_msgSender(), address(this), usdPrice);
-        uint256 toSellForSafe = _getTotalShare(usdPrice, priceDistributionOnMint, referralExists ? referralShareForNFTPurchase : 0);
-        console.log("transferring toSellForSafe", toSellForSafe);
-        uint256 safeAmount = safeToken.buySafeForExactAmountOfUSD(toSellForSafe);
-        console.log("safeAmount returned from ", safeAmount);
-        uint256 amountDistributed = _distribute(safeToken, safeAmount, priceDistributionOnMint);
-        console.log("transferred to protocol wallets", amountDistributed);
-        if (referralExists) {
-            uint256 referralFee = _transferPercent(safeToken, safeAmount, _referral, referralShareForNFTPurchase);
-            console.log("referral fee", referralFee);
-            amountDistributed += referralFee;
+
+        //during presale the shares are distributed in USD, then in SAFE
+        if (!presale) {
+            uint256 toSellForSafe = _getTotalShare(usdPrice, priceDistributionOnMint, referralExists ? referralShareForNFTPurchase : 0);
+            console.log("transferring toSellForSafe", toSellForSafe);
+            uint256 safeAmount = safeToken.buySafeForExactAmountOfUSD(toSellForSafe);
+            console.log("safeAmount returned from ", safeAmount);
+            uint256 amountDistributed = _distribute(safeToken, safeAmount, priceDistributionOnMint);
+            console.log("transferred to protocol wallets", amountDistributed);
+            if (referralExists) {
+                uint256 referralFee = _transferPercent(safeToken, safeAmount, _referral, referralShareForNFTPurchase);
+                console.log("referral fee", referralFee);
+                amountDistributed += referralFee;
             }
-        console.log("total transferred to wallets", amountDistributed);
+            console.log("total transferred to wallets", amountDistributed);
+        }
+        else {
+            uint256 toSendToReferral = referralExists ? _transferPercent(usd, usdPrice, _referral, referralShareForNFTPurchase) : 0;
+            uint256 toSendToTreasury = !referralExists ? _transferPercent(usd, usdPrice, wallets[uint256(WalletsUsed.Treasury)], referralShareForNFTPurchase) : 0;
+            uint256 amountDistributed = _distribute(usd, usdPrice, priceDistributionOnMint);
+        }
         uint256 balance = usd.balanceOf(address(this));
         if (balance > 0) {
             safeVault.deposit(balance);

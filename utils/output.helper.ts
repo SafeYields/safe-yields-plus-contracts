@@ -24,7 +24,7 @@ export const deploySuccess = (message: string) => deployLogger(chalk.green(messa
 
 export const networkInfo = async (hre: HardhatRuntimeEnvironment, display: (message: string) => void) =>
   !process.env.HIDE_SHOW_NETWORK &&
-  display(`Network:  (${hre.network.live ? chalk.red('live!') : chalk.yellow('local')})\n`);
+  display(`Network:  (${hre.network.live ? `${chalk.red('live!')}, ${hre.network.name}` : chalk.yellow('local')})\n`);
 
 export const displayDeployResult = (name: string, result: DeployResult) =>
   !result.newlyDeployed
