@@ -1,4 +1,4 @@
-import { SafeToken } from '@contractTypes/contracts';
+import { SafeNFT, SafeToken } from '@contractTypes/contracts';
 import { deployInfo } from '@utils/output.helper';
 import { DeployFunction } from 'hardhat-deploy/types';
 
@@ -11,6 +11,13 @@ const func: DeployFunction = async hre => {
   for (const address of [treasury, management, vault.address, nft.address]) {
     deployInfo(`Authorizing SafeToken for ${address}`);
     await (await tokenContract.rely(address)).wait();
+  }
+  const nftContract = await hre.ethers.getContract<SafeNFT>('SafeNFT');
+  if (!(await nftContract.presale())) {
+    deployInfo(`Setting presale to true`);
+    await (await nftContract.togglePresale()).wait();
+  } else {
+    deployInfo(`Presale is already true`);
   }
 };
 export default func;

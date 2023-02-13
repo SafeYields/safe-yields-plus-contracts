@@ -13,7 +13,7 @@ const func: DeployFunction = async hre => {
     deployments: { deploy },
   } = hre;
 
-  const { deployer } = await hre.getNamedAccounts();
+  const { deployer, stabilizer } = await hre.getNamedAccounts();
 
   const token = await hre.deployments.get('SafeToken');
 
@@ -28,6 +28,7 @@ const func: DeployFunction = async hre => {
       Object.values(costDistributionForNFT),
       referralShareForNFTPurchase,
       Object.values(profitDistributionForNFT),
+      stabilizer,
     ],
   });
 };

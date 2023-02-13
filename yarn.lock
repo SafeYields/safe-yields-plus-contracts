@@ -9492,15 +9492,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hardhat-contract-sizer@npm:^2.6.1":
-  version: 2.6.1
-  resolution: "hardhat-contract-sizer@npm:2.6.1"
+"hardhat-contract-sizer@npm:^2.8.0":
+  version: 2.8.0
+  resolution: "hardhat-contract-sizer@npm:2.8.0"
   dependencies:
     chalk: ^4.0.0
     cli-table3: ^0.6.0
+    strip-ansi: ^6.0.0
   peerDependencies:
     hardhat: ^2.0.0
-  checksum: a82ae2405a8571e8b0cd0a21dea9a10946b342f1ada04c72c9cbe28fca955f9a2b1394c70400003f388182298dc1de00e80bf56dbfa5e36833d3c93ab1f50c0c
+  checksum: 6f1f4aca16a8ceeb9b3ce8ec89075c2fb292a3c82941ae826a9d503e077fda58e1d62b5c561252385c320a978d65399a2e829cec7c643250eaca163546831cbb
   languageName: node
   linkType: hard
 
@@ -15058,7 +15059,7 @@ __metadata:
     exceljs: ^4.3.0
     hardhat: ^2.12.6
     hardhat-abi-exporter: ^2.10.0
-    hardhat-contract-sizer: ^2.6.1
+    hardhat-contract-sizer: ^2.8.0
     hardhat-deploy: ^0.11.22
     hardhat-deploy-ethers: ^0.3.0-beta.13
     hardhat-erc1820: ^0.1.0

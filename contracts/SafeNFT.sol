@@ -30,6 +30,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     uint256[WALLETS] public priceDistributionOnMint;
     uint256[WALLETS] public profitDistribution;
     uint256 public referralShareForNFTPurchase;
+    address public stabilizerWallet;
 
     // @dev Presale status, if true, only whitelisted addresses can mint
     bool public presale;
@@ -55,7 +56,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
     /* ============ External and Public State Changing Functions ============ */
 
-    function initialize(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256 _referralShareForNFTPurchase, uint256[WALLETS] memory _profitDistribution) public proxied {
+    function initialize(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256 _referralShareForNFTPurchase, uint256[WALLETS] memory _profitDistribution, address _stabilizerWallet) public proxied {
         _setURI(_uri);
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(MINTER_ROLE, _msgSender());
@@ -66,6 +67,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         priceDistributionOnMint = _priceDistributionOnMint;
         referralShareForNFTPurchase = _referralShareForNFTPurchase;
         profitDistribution = _profitDistribution;
+        stabilizerWallet = _stabilizerWallet;
         _setWallets(safeToken.getWallets());
         safeVault = safeToken.safeVault();
         usd = safeToken.usd();
@@ -75,8 +77,8 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         currentDistributionId = 0;
     }
 
-    constructor(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256 _referralShareForNFTPurchase, uint256[WALLETS] memory _profitDistribution) ERC1155PresetMinterPauser(_uri) {
-        initialize(_uri, _price, _maxSupply, _safeToken, _priceDistributionOnMint, _referralShareForNFTPurchase, _profitDistribution);
+    constructor(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256 _referralShareForNFTPurchase, uint256[WALLETS] memory _profitDistribution, address _stabilizerWallet) ERC1155PresetMinterPauser(_uri) {
+        initialize(_uri, _price, _maxSupply, _safeToken, _priceDistributionOnMint, _referralShareForNFTPurchase, _profitDistribution, _stabilizerWallet);
     }
 
     function togglePresale() public onlyAdmin {
@@ -111,15 +113,19 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
                 amountDistributed += referralFee;
             }
             console.log("total transferred to wallets", amountDistributed);
+            uint256 balance = usd.balanceOf(address(this));
+            if (balance > 0) {
+                safeVault.deposit(balance);
+            }
         }
         else {
             uint256 toSendToReferral = referralExists ? _transferPercent(usd, usdPrice, _referral, referralShareForNFTPurchase) : 0;
             uint256 toSendToTreasury = !referralExists ? _transferPercent(usd, usdPrice, wallets[uint256(WalletsUsed.Treasury)], referralShareForNFTPurchase) : 0;
             uint256 amountDistributed = _distribute(usd, usdPrice, priceDistributionOnMint);
-        }
-        uint256 balance = usd.balanceOf(address(this));
-        if (balance > 0) {
-            safeVault.deposit(balance);
+            uint256 balance = usd.balanceOf(address(this));
+            if (balance > 0) {
+                usd.transfer(stabilizerWallet, balance);
+            }
         }
         _mint(_msgSender(), id, _amount, "");
     }
