@@ -16,7 +16,7 @@ import "hardhat/console.sol";
 /// @author crypt0grapher
 /// @notice Safe Yields NFT token based on ERC1155 standard, id [0..3] represents one of the 4 tiers
 contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied, ReentrancyGuard {
-/// todo a number of tiers should be flexible
+    /// todo a number of tiers should be flexible
     uint256 public constant TIERS = 4;
     uint256 public constant WEEKS = 4;
     uint256[TIERS] public price;
@@ -91,7 +91,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     }
 
     function setPresaleStartDate(uint256 _launchDate) public onlyAdmin {
-        require(_launchDate > block.timestamp, "Launch date must be in the future");
+//        require(_launchDate > block.timestamp, "Launch date must be in the future");
         presaleStartDate = _launchDate;
     }
 
@@ -108,18 +108,18 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
     function buy(Tiers _tier, uint256 _amount, address _referral) public nonReentrant {
         console.log("buying NFT");
-        require(_amount > 0, "ERC1155PresetMinterPauser: amount must be greater than 0");
+        require(_amount > 0, "E RC1155PresetMinterPauser: amount must be greater than 0");
         ///todo check on totalsupply per tier
         require(price[uint256(_tier)] > 0, "ERC1155PresetMinterPauser: tier price must be greater than 0");
         bool referralExists = _referral != address(0);
         require(!referralExists || referralExists && _referral != _msgSender(), "Referral must be different from sender");
         uint256 id = uint256(_tier);
-        uint256 usdPrice = price[uint256(_tier)] * _amount;
-        console.log("transferring usdPrice", usdPrice);
-        usd.transferFrom(_msgSender(), address(this), usdPrice);
 
         //during presale the shares are distributed in USD, then in SAFE
         if (!presale) {
+            uint256 usdPrice = price[uint256(_tier)] * _amount;
+            console.log("transferring usdPrice", usdPrice);
+            usd.transferFrom(_msgSender(), address(this), usdPrice);
             uint256 toSellForSafe = _getTotalShare(usdPrice, priceDistributionOnMint, referralExists ? referralShareForNFTPurchase : 0);
             console.log("transferring toSellForSafe", toSellForSafe);
             uint256 safeAmount = safeToken.buySafeForExactAmountOfUSD(toSellForSafe);
@@ -138,6 +138,11 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
             }
         }
         else {
+            require(block.timestamp >= presaleStartDate, "Presale is not started yet");
+            uint256[TIERS] memory discountedPrice = presalePrice[getCurrentPresaleWeek()];
+            uint256 usdPrice = discountedPrice[uint256(_tier)] * _amount;
+            console.log("transferring usdPrice", usdPrice);
+            usd.transferFrom(_msgSender(), address(this), usdPrice);
             uint256 toSendToReferral = referralExists ? _transferPercent(usd, usdPrice, _referral, referralShareForNFTPurchase) : 0;
             uint256 toSendToTreasury = !referralExists ? _transferPercent(usd, usdPrice, wallets[uint256(WalletsUsed.Treasury)], referralShareForNFTPurchase) : 0;
             uint256 amountDistributed = _distribute(usd, usdPrice, priceDistributionOnMint);
@@ -189,10 +194,8 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     /* ============ External and Public View Functions ============ */
 
     function getCurrentPresaleWeek() public view returns (uint256) {
-        if (block.timestamp < presaleStartDate) {
-            return 0;
-        }
-        return (block.timestamp - presaleStartDate) / 7 days + 1;
+        require(presale && presaleStartDate > 0, "Presale not started");
+        return (block.timestamp - presaleStartDate) / 7 days;
     }
 
     function getBalanceTable(address _user) public view returns (uint256[] memory) {

@@ -1,3 +1,4 @@
+import { PRESALE_START_DATE, discountedPresalePriceNFT } from '@config';
 import { SafeNFT, SafeToken } from '@contractTypes/contracts';
 import { deployInfo } from '@utils/output.helper';
 import { DeployFunction } from 'hardhat-deploy/types';
@@ -16,6 +17,8 @@ const func: DeployFunction = async hre => {
   if (!(await nftContract.presale())) {
     deployInfo(`Setting presale to true`);
     await (await nftContract.togglePresale()).wait();
+    await (await nftContract.setPresaleStartDate(PRESALE_START_DATE)).wait();
+    await (await nftContract.setDiscountedPriceTable(discountedPresalePriceNFT.map(o => Object.values(o)))).wait();
   } else {
     deployInfo(`Presale is already true`);
   }
