@@ -16,10 +16,14 @@ import "hardhat/console.sol";
 /// @author crypt0grapher
 /// @notice Safe Yields NFT token based on ERC1155 standard, id [0..3] represents one of the 4 tiers
 contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied, ReentrancyGuard {
-
+/// todo a number of tiers should be flexible
     uint256 public constant TIERS = 4;
+    uint256 public constant WEEKS = 4;
     uint256[TIERS] public price;
+    uint256[TIERS][WEEKS] public presalePrice;
     uint256[TIERS] public maxSupply;
+
+    uint256 public presaleStartDate;
 
     ISafeToken public safeToken;
     ISafeVault public safeVault;
@@ -84,6 +88,21 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     function togglePresale() public onlyAdmin {
         presale = !presale;
         emit TogglePresale(presale);
+    }
+
+    function setPresaleStartDate(uint256 _launchDate) public onlyAdmin {
+        require(_launchDate > block.timestamp, "Launch date must be in the future");
+        presaleStartDate = _launchDate;
+    }
+
+    function setDiscountedPriceTable(uint256[][] memory _presalePrice) public onlyAdmin {
+        require(_presalePrice.length == WEEKS, "Incorrect number of weeks");
+        for (uint256 i = 0; i < WEEKS; i++) {
+            require(_presalePrice[i].length == TIERS, "Incorrect number of tiers");
+            for (uint256 j = 0; j < TIERS; j++) {
+                presalePrice[i][j] = _presalePrice[i][j];
+            }
+        }
     }
 
 
@@ -168,6 +187,14 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
 
     /* ============ External and Public View Functions ============ */
+
+    function getCurrentPresaleWeek() public view returns (uint256) {
+        if (block.timestamp < presaleStartDate) {
+            return 0;
+        }
+        return (block.timestamp - presaleStartDate) / 7 days + 1;
+    }
+
     function getBalanceTable(address _user) public view returns (uint256[] memory) {
         uint256[] memory priceTable = new uint256[](TIERS);
         for (uint256 i = 0; i < TIERS; i++) {

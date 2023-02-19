@@ -47,6 +47,23 @@ interface ISafeNFT is IERC1155 {
     function getMyBalanceTable() external view returns (uint256[] memory);
 
     /**
+    *   @notice toggles presale status
+    */
+    function togglePresale() external;
+
+    /**
+    *   @notice toggles presale status
+    */
+    function setPresaleStartDate(uint256 launchDate) external;
+
+    /**
+    *   @notice gets all discounted NFT prices in USD, for presale for all 4 weeks of the presale
+    *   @param _presalePrice 4x4 table of the discounted prices for all 4 tiers for all 4 weeks of the presale
+    */
+    function setDiscountedPriceTable(uint256[][] memory _presalePrice) external;
+
+
+    /**
     *   @notice gets NFT balance for all tiers
     */
     function getBalanceTable(address _user) external view returns (uint256[] memory);
@@ -60,11 +77,16 @@ interface ISafeNFT is IERC1155 {
 
 
     /**
-    *   @notice gets all NFT prices in USD
-    *   @return returns all NFT prices in one table in USD
+    *   @notice gets all NFT prices in USD, the original ones without discounts
+    *   @return uint256[] containing all NFT prices in one table in USD
     */
     function getPriceTable() external view returns (uint256[] memory);
 
+    /**
+    *   @notice gets the current presale week
+    *   @return returns 1-4
+    */
+    function getCurrentPresaleWeek() external view returns (uint256);
 
     /**
     *   @notice gets NFT price in USD
@@ -100,7 +122,7 @@ interface ISafeNFT is IERC1155 {
     /**
     *   @notice returns the amount of the reward share for the NFT holder
     */
-    function getPendingRewards(address _user, Tiers _tier, uint256 _distributionId)  external view returns (uint256);
+    function getPendingRewards(address _user, Tiers _tier, uint256 _distributionId) external view returns (uint256);
 
     /**
     *   @notice gets the total usd value of the NFT minted
