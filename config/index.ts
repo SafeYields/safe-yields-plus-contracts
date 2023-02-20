@@ -7,6 +7,8 @@ type Distribution = {
   management: BigNumberish;
 };
 
+export type TierPrices = Record<keyof typeof NFTTiers, BigNumberish>;
+
 export const PERCENTAGE_PRECISION_MULTIPLIER = 1_000_000;
 export const percent = (value: number) => value * PERCENTAGE_PRECISION_MULTIPLIER;
 export const HUNDRED_PERCENT = percent(100);
@@ -54,21 +56,19 @@ export enum NFTTiers {
 }
 
 // export const tierPriceNFT = [toWei(131.25), toWei(262.5), toWei(525), toWei(1050)];
-export const tierPriceNFT: Record<keyof typeof NFTTiers, BigNumberish> = {
+export const tierPriceNFT: TierPrices = {
   Tier1: toWei(131.25, 6),
   Tier2: toWei(262.5, 6),
   Tier3: toWei(525, 6),
   Tier4: toWei(1050, 6),
 };
 
-export const discountedPresalePriceNFT: Record<keyof typeof NFTTiers, BigNumberish>[] = [0.6, 0.7, 0.8, 0.9].map(
-  discount => {
-    return {
-      Tier1: toWei(131.25 * discount, 6),
-      Tier2: toWei(262.5 * discount, 6),
-      Tier3: toWei(525 * discount, 6),
-      Tier4: toWei(1050 * discount, 6),
-    };
-  },
-);
+export const discountedPresalePriceNFT: TierPrices[] = [0.6, 0.7, 0.8, 0.9].map(discount => {
+  return {
+    Tier1: toWei(131.25 * discount, 6),
+    Tier2: toWei(262.5 * discount, 6),
+    Tier3: toWei(525 * discount, 6),
+    Tier4: toWei(1050 * discount, 6),
+  };
+});
 export const tierMaxSupplyNFT = [2000, 1000, 1000, 1000];

@@ -1,3 +1,4 @@
+import { TierPrices } from '@config';
 import { BigNumberish } from '@ethersproject/bignumber';
 import chalk from 'chalk';
 import { BigNumber, ethers } from 'ethers';
@@ -39,3 +40,7 @@ export const formattedFromWei = (value: BigNumberish, decimals = 6) =>
 
 export const sayMaximumForMaxUint = (allowance: BigNumber) =>
   allowance.eq(ethers.constants.MaxUint256) ? chalk.magenta('Maximum') : fromWei(allowance);
+export const displayDiscountedPresalePriceNFT = (tierPrices: TierPrices[], displayFunc: (message: string) => void) =>
+  tierPrices.map((tierPrices, week) =>
+    displayFunc(`Week: ${week} ${Object.values(tierPrices).map(v => fromWei(v).padStart(8, ' '))}`),
+  );
