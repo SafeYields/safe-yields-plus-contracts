@@ -57,7 +57,7 @@ interface ISafeNFT is IERC1155 {
     function setPresaleStartDate(uint256 launchDate) external;
 
     /**
-    *   @notice gets all discounted NFT prices in USD, for presale for all 4 weeks of the presale
+    *   @notice sets all discounted NFT prices in USD, for presale for all 4 weeks of the presale
     *   @param _presalePrice 4x4 table of the discounted prices for all 4 tiers for all 4 weeks of the presale
     */
     function setDiscountedPriceTable(uint256[][] memory _presalePrice) external;
@@ -81,6 +81,14 @@ interface ISafeNFT is IERC1155 {
     *   @return uint256[] containing all NFT prices in one table in USD
     */
     function getPriceTable() external view returns (uint256[] memory);
+
+    /**
+    *   @notice gets all discounted NFT prices in USD, for presale for all 4 weeks of the presale
+     *   @return uint256[] containing all NFT prices in one table in USD for the current presale week
+    */
+    function getDiscountedPriceTable()  external view returns (uint256[] memory);
+
+
 
     /**
     *   @notice gets the current presale week

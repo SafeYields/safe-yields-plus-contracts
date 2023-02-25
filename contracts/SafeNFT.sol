@@ -91,7 +91,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     }
 
     function setPresaleStartDate(uint256 _launchDate) public onlyAdmin {
-//        require(_launchDate > block.timestamp, "Launch date must be in the future");
+        //        require(_launchDate > block.timestamp, "Launch date must be in the future");
         presaleStartDate = _launchDate;
     }
 
@@ -224,6 +224,15 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         uint256[] memory priceTable = new uint256[](TIERS);
         for (uint256 i = 0; i < TIERS; i++) {
             priceTable[i] = getFairPrice(Tiers(i));
+        }
+        return priceTable;
+    }
+
+    function getDiscountedPriceTable() public view returns (uint256[] memory) {
+        uint256 week = getCurrentPresaleWeek();
+        uint256[] memory priceTable = new uint256[](TIERS);
+        for (uint256 i = 0; i < TIERS; i++) {
+            priceTable[i] = presalePrice[week][i];
         }
         return priceTable;
     }
