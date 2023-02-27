@@ -38,6 +38,10 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
     // @dev Presale status, if true, only whitelisted addresses can mint
     bool public presale;
+    // @dev Presale week for a tokenId, 0 means not in presale, user address => tier => presale week => amount
+    mapping(address => mapping(uint256 => mapping(uint256 => uint256))) public soldPerPresaleWeek;
+    uint256[TIERS] public presaleMaxSupply;
+    uint256[TIERS] public currentlySoldInPresale;
 
     uint256 public currentDistributionId;
     // @dev distributionId => distribution amount in USD
@@ -95,6 +99,10 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         presaleStartDate = _launchDate;
     }
 
+    function setPresaleMaxSupply(uint256[TIERS] memory _presaleMaxSupply) public onlyAdmin {
+        presaleMaxSupply = _presaleMaxSupply;
+    }
+
     function setDiscountedPriceTable(uint256[][] memory _presalePrice) public onlyAdmin {
         require(_presalePrice.length == WEEKS, "Incorrect number of weeks");
         for (uint256 i = 0; i < WEEKS; i++) {
@@ -139,7 +147,13 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         }
         else {
             require(block.timestamp >= presaleStartDate, "Presale is not started yet");
-            uint256[TIERS] memory discountedPrice = presalePrice[getCurrentPresaleWeek()];
+            uint256 week = getCurrentPresaleWeek();
+            uint256[TIERS] memory discountedPrice = presalePrice[week];
+            soldPerPresaleWeek[_msgSender()][week][uint256(_tier)] += _amount;
+            currentlySoldInPresale[uint256(_tier)] += _amount;
+            if (currentlySoldInPresale[uint256(_tier)] > presaleMaxSupply[uint256(_tier)] * week) {
+                revert("Presale max supply per week reached");
+            }
             uint256 usdPrice = discountedPrice[uint256(_tier)] * _amount;
             console.log("transferring usdPrice", usdPrice);
             usd.transferFrom(_msgSender(), address(this), usdPrice);

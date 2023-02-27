@@ -72,3 +72,4 @@ export const discountedPresalePriceNFT: TierPrices[] = [0.6, 0.7, 0.8, 0.9].map(
   };
 });
 export const tierMaxSupplyNFT = [2000, 1000, 1000, 1000];
+export const presaleMaxSupply: [number, number, number, number] = [50, 25, 25, 25];
