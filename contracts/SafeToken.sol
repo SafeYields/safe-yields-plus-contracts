@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "hardhat-deploy/solc_0.8/proxy/Proxied.sol";
-import "hardhat/console.sol";
 import "./Wallets.sol";
 
 /// @title  SafeToken
@@ -111,15 +110,9 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
     // usdTax = usdToSwapForSafe * buyTax
     // safeTokensToBuy = usdToSwapForSafe / price();
     function buySafeForExactAmountOfUSD(uint256 _usdToSpend) public nonReentrant returns (uint256) {
-        console.log("buySafeForExactAmountOfUSD, _usdToSpend: %s", _usdToSpend);
-        console.log("_msgSender(): %s", _msgSender());
-        console.log("usd: %s", address(usd));
         uint256 usdToSwapForSafe = _usdToSpend * (HUNDRED_PERCENT - BUY_TAX_PERCENT) / HUNDRED_PERCENT;
-        console.log("usdToSwapForSafe", usdToSwapForSafe);
         uint256 usdTax = _usdToSpend * BUY_TAX_PERCENT / HUNDRED_PERCENT;
-        console.log("usdTax", usdTax);
         uint256 safeTokensToBuy = (usdToSwapForSafe * 1e6) / price();
-        console.log("safeTokensToBuy", safeTokensToBuy);
         _mint(_msgSender(), safeTokensToBuy);
         usd.transferFrom(_msgSender(), address(this), _usdToSpend);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
@@ -131,17 +124,12 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
     // USDC = SAFE * price() * 100.25%
     // tax = USDC * 0.25%
     function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public nonReentrant {
-        console.log("buyExactAmountOfSafe");
         uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e6;
-        console.log("usdPriceOfTokensToBuy", usdPriceOfTokensToBuy);
         uint256 usdTax = usdPriceOfTokensToBuy * BUY_TAX_PERCENT / HUNDRED_PERCENT;
-        console.log("usdTax", usdTax);
         uint256 usdToSpend = usdPriceOfTokensToBuy + usdTax;
-        console.log("usdToSpend", usdToSpend);
         _mint(_msgSender(), _safeTokensToBuy);
         usd.transferFrom(_msgSender(), address(this), usdToSpend);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
-        console.log("paid", paid);
         if (usdTax - paid > 0) {
             safeVault.deposit(usdToSpend - paid);
         }
@@ -151,20 +139,13 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
     }
 
     function sellExactAmountOfSafe(uint256 _safeTokensToSell) public nonReentrant {
-        console.log("sellExactAmountOfSafe");
         uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e6;
-        console.log("usdPriceOfTokensToSell", usdPriceOfTokensToSell);
         uint256 usdTax = usdPriceOfTokensToSell * SELL_TAX_PERCENT / HUNDRED_PERCENT;
-        console.log("usdTax", usdTax);
         uint256 usdToReturn = usdPriceOfTokensToSell - usdTax;
-        console.log("usdToReturn", usdToReturn);
         _burn(_msgSender(), _safeTokensToSell);
-        console.log("burned tokens from _msgSender(): %s", _safeTokensToSell);
         safeVault.withdraw(_msgSender(), usdToReturn);
         safeVault.withdraw(address(this), usdTax);
-        console.log("transferred from the user usdTax: %s", usdTax);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
-        console.log("usdTax - paid: %s", usdTax - paid);
         if (usdTax - paid > 0) {
             safeVault.deposit(usdTax - paid);
         }

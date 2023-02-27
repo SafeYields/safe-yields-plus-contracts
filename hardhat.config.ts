@@ -131,7 +131,7 @@ const config: HardhatUserConfig = {
         version: '0.8.17',
         settings: {
           optimizer: {
-            enabled: !process.env.OPTIMIZER_DISABLED,
+            enabled: true ?? process.env.OPTIMIZER_DISABLED,
             runs: 250,
           },
           outputSelection: {
