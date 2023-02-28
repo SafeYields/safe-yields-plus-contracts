@@ -200,11 +200,11 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         return (block.timestamp - presaleStartDate) / 7 days;
     }
 
-    function getPresaleSupplyLeft(Tiers _tier) public view returns (uint256[] memory) {
+    function getPresaleNFTAvailable() public view returns (uint256[] memory) {
         uint256 week = getCurrentPresaleWeek();
         uint256[] memory supplyLeft = new uint256[](TIERS);
         for (uint256 i = 0; i < TIERS; i++) {
-            supplyLeft[i] = presaleMaxSupply[uint256(_tier)] * week - currentlySoldInPresale[uint256(_tier)];
+            supplyLeft[i] = presaleMaxSupply[i] * week - currentlySoldInPresale[i];
         }
         return supplyLeft;
     }
