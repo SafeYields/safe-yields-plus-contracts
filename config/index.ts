@@ -13,7 +13,9 @@ export const PERCENTAGE_PRECISION_MULTIPLIER = 1_000_000;
 export const percent = (value: number) => value * PERCENTAGE_PRECISION_MULTIPLIER;
 export const HUNDRED_PERCENT = percent(100);
 
-export const PRESALE_START_DATE = new Date('March 3, 2023 17:00:00').getTime() / 1000;
+// export const PRESALE_START_DATE = new Date('March 3, 2023 17:00:00').getTime() / 1000;
+export const PRESALE_START_DATE = new Date('March 1, 2023 17:00:00').getTime() / 1000;
+export const WEEK = 4 * 60 * 60;
 
 export enum Wallets {
   Treasury,

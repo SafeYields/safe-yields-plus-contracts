@@ -54,7 +54,7 @@ interface ISafeNFT is IERC1155 {
     /**
     *   @notice toggles presale status
     */
-    function setPresaleStartDate(uint256 launchDate) external;
+    function setPresaleStartDate(uint256 launchDate, uint256 _weekDuration) external;
 
     /**
     *   @notice sets all discounted NFT prices in USD, for presale for all 4 weeks of the presale

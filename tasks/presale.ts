@@ -1,4 +1,4 @@
-import { discountedPresalePriceNFT, presaleMaxSupply } from '@config';
+import { WEEK, discountedPresalePriceNFT, presaleMaxSupply } from '@config';
 import { SafeNFT } from '@contractTypes/contracts';
 import { displayDiscountedPresalePriceNFT, info, networkInfo, success } from '@utils/output.helper';
 import { task, types } from 'hardhat/config';
@@ -33,7 +33,7 @@ export default task('presale', 'gets and sets presale date to now or other date'
       if (setdate) {
         const timeStamp = moment(date, timeStampFormat).unix();
         info(`setting presale start to ${date}, which is ${timeStamp}`);
-        await (await nftContract.setPresaleStartDate(timeStamp)).wait();
+        await (await nftContract.setPresaleStartDate(timeStamp, WEEK)).wait();
       }
       if (price) {
         info(`setting discounted price table start to:`);

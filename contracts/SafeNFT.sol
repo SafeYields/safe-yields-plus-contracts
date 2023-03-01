@@ -23,6 +23,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     uint256[TIERS] public maxSupply;
 
     uint256 public presaleStartDate;
+    uint256 public weekDuration;
 
     ISafeToken public safeToken;
     ISafeVault public safeVault;
@@ -93,9 +94,10 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         emit TogglePresale(presale);
     }
 
-    function setPresaleStartDate(uint256 _launchDate) public onlyAdmin {
+    function setPresaleStartDate(uint256 _launchDate, uint256 _weekDuration) public onlyAdmin {
         //        require(_launchDate > block.timestamp, "Launch date must be in the future");
         presaleStartDate = _launchDate;
+        weekDuration = _weekDuration;
     }
 
     function setPresaleMaxSupply(uint256[TIERS] memory _presaleMaxSupply) public onlyAdmin {
@@ -196,8 +198,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     /* ============ External and Public View Functions ============ */
 
     function getCurrentPresaleWeek() public view returns (uint256) {
-        require(presale && presaleStartDate > 0, "Presale not started");
-        return (block.timestamp - presaleStartDate) / 7 days;
+        return presale && presaleStartDate > 0 ? (block.timestamp - presaleStartDate) / weekDuration + 1 : 0;
     }
 
     function getPresaleNFTAvailable() public view returns (uint256[] memory) {
