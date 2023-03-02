@@ -26,6 +26,8 @@ task('accounts', 'Get the address and balance information (ETH, SAFE, USDC) for 
     const accounts = {
       user,
       ...namedAccounts,
+      treasury: process.env.TREASURY_ADDRESS,
+      management: process.env.MANAGEMENT_ADDRESS,
       SafeNFT: nftDeployment.address,
       SafeToken: tokenDeployment.address,
       SafeVault: vaultDeployment.address,

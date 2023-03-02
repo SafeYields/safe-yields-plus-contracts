@@ -36,9 +36,13 @@ export const taxDistributionForSafeToken: Distribution = {
 };
 
 export const costDistributionForNFT: Distribution = {
-  treasury: percent(70),
-  management: percent(20),
+  treasury: percent(50),
+  management: percent(40),
 };
+// export const costDistributionForNFT: Distribution = {
+//   treasury: percent(70),
+//   management: percent(20),
+// };
 
 export const referralShareForNFTPurchase = percent(5);
 //the rest goes to teh vault
