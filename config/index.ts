@@ -1,6 +1,5 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { toWei } from '@utils/output.helper';
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 type Distribution = {
   treasury: BigNumberish;
@@ -14,18 +13,16 @@ export const percent = (value: number) => value * PERCENTAGE_PRECISION_MULTIPLIE
 export const HUNDRED_PERCENT = percent(100);
 
 // export const PRESALE_START_DATE = new Date('March 3, 2023 17:00:00').getTime() / 1000;
-export const PRESALE_START_DATE = new Date('March 1, 2023 17:00:00').getTime() / 1000;
-export const WEEK = 4 * 60 * 60;
+export const PRESALE_START_DATE = (networkName: string) =>
+  networkName == 'mainnet'
+    ? new Date('March 3, 2023 17:00:00').getTime() / 1000
+    : new Date('March 2, 2023 00:00:00').getTime() / 1000;
+export const WEEK = (networkName: string) => (networkName == 'mainnet' ? 7 * 24 * 3600 : 4 * 60 * 60);
 
 export enum Wallets {
   Treasury,
   Management,
 }
-
-export const wallets = async (hre: HardhatRuntimeEnvironment): Promise<string[]> => {
-  const { treasury, management } = await hre.getNamedAccounts();
-  return [treasury, management];
-};
 
 export const tax = {
   buyTaxPercent: percent(0.25),

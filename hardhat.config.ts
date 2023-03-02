@@ -26,11 +26,7 @@ if (!explorerApiKey) {
   console.log("ARBISCAN_API_KEY not set in an .env file, deployment verification won't be available");
 }
 
-const mainnetAccounts = [
-  process.env.DEPLOYER_PRIVATE_KEY ?? '',
-  process.env.TREASURY_PRIVATE_KEY ?? '',
-  process.env.MANAGEMENT_PRIVATE_KEY ?? '',
-];
+const mainnetAccounts = [process.env.DEPLOYER_PRIVATE_KEY ?? '', process.env.STABILIZER_PRIVATE_KEY || ''];
 
 const MAINNET_USDC_ADDRESS = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8';
 const TESTNET_USDC_ADDRESS = '0x179522635726710dd7d2035a81d856de4aa7836c';
@@ -39,14 +35,6 @@ const balance = '100000000000000000000000';
 const accounts: HardhatNetworkAccountsUserConfig = [
   {
     privateKey: process.env.DEPLOYER_PRIVATE_KEY || '',
-    balance,
-  },
-  {
-    privateKey: process.env.TREASURY_PRIVATE_KEY || '',
-    balance,
-  },
-  {
-    privateKey: process.env.MANAGEMENT_PRIVATE_KEY || '',
     balance,
   },
   {
@@ -105,7 +93,7 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.LIVENET_MNEMONIC,
         path: "m/44'/60'/0'/0",
         initialIndex: 0,
-        count: 4,
+        count: 2,
       },
     },
     mainnet: {
@@ -116,9 +104,7 @@ const config: HardhatUserConfig = {
   },
   namedAccounts: {
     deployer: 0,
-    treasury: 1,
-    management: 2,
-    stabilizer: 3,
+    stabilizer: 1,
     usdc: {
       42161: MAINNET_USDC_ADDRESS,
       421613: TESTNET_USDC_ADDRESS,

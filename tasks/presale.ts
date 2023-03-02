@@ -33,7 +33,7 @@ export default task('presale', 'gets and sets presale date to now or other date'
       if (setdate) {
         const timeStamp = moment(date, timeStampFormat).unix();
         info(`setting presale start to ${date}, which is ${timeStamp}`);
-        await (await nftContract.setPresaleStartDate(timeStamp, WEEK)).wait();
+        await (await nftContract.setPresaleStartDate(timeStamp, WEEK(hre.network.name))).wait();
       }
       if (price) {
         info(`setting discounted price table start to:`);
