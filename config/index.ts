@@ -15,8 +15,8 @@ export const HUNDRED_PERCENT = percent(100);
 // export const PRESALE_START_DATE = new Date('March 3, 2023 17:00:00').getTime() / 1000;
 export const PRESALE_START_DATE = (networkName: string) =>
   networkName == 'mainnet'
-    ? new Date('March 3, 2023 17:00:00').getTime() / 1000
-    : new Date('March 2, 2023 00:00:00').getTime() / 1000;
+    ? new Date('2023-03-03T17:00Z').getTime() / 1000
+    : new Date('2023-03-02T17:00Z').getTime() / 1000;
 export const WEEK = (networkName: string) => (networkName == 'mainnet' ? 7 * 24 * 3600 : 4 * 60 * 60);
 
 export enum Wallets {
