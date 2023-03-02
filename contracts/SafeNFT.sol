@@ -143,7 +143,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
             require(block.timestamp >= presaleStartDate, "Presale is not started yet");
             uint256 week = getCurrentPresaleWeek();
             require(week <= WEEKS, "Presale is over");
-            uint256[TIERS] memory discountedPrice = presalePrice[week];
+            uint256[TIERS] memory discountedPrice = presalePrice[week - 1];
             soldPerPresaleWeek[_msgSender()][week][uint256(_tier)] += _amount;
             currentlySoldInPresale[uint256(_tier)] += _amount;
             if (currentlySoldInPresale[uint256(_tier)] > presaleMaxSupply[uint256(_tier)] * week) {
@@ -247,7 +247,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
             return getPriceTable();
         uint256[] memory priceTable = new uint256[](TIERS);
         for (uint256 i = 0; i < TIERS; i++) {
-            priceTable[i] = presalePrice[week][i];
+            priceTable[i] = presalePrice[week - 1][i];
         }
         return priceTable;
     }
