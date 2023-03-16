@@ -81,10 +81,10 @@ The contracts are upgradable both ERC-173 and ERC-1967 transparent proxy complia
 |------------|----------------------------------------------------------------------------------------------------------------------|
 Contract | Address |
 |------------|----------------------------------------------------------------------------------------------------------------------|
-| Safe
-NFT | [0xe2967C90F8cec65Ae12c4bC36c771249C12a2310](https://arbiscan.io/address/0xe2967C90F8cec65Ae12c4bC36c771249C12a2310) |
-| Safe
-Token | [0x519EfB2bEFBd3f00D335dc9DF42BF721D591604f](https://arbiscan.io/address/0x519EfB2bEFBd3f00D335dc9DF42BF721D591604f) |
+|
+SafeNFT | [0xe2967C90F8cec65Ae12c4bC36c771249C12a2310](https://arbiscan.io/address/0xe2967C90F8cec65Ae12c4bC36c771249C12a2310) |
+|
+SafeToken | [0x519EfB2bEFBd3f00D335dc9DF42BF721D591604f](https://arbiscan.io/address/0x519EfB2bEFBd3f00D335dc9DF42BF721D591604f) |
 
 ###
 
