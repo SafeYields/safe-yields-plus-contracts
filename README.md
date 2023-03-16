@@ -70,7 +70,8 @@ The contracts are upgradable both ERC-173 and ERC-1967 transparent proxy complia
 
 - [SafeNFT.sol](contracts%2FSafeNFT.sol) : ERC-1155 compatible NFT implementing Safe NFT, including presale tokens.
 - [SafeToken.sol](contracts%2FSafeToken.sol) : ERC-20 compatible token.
-- [SafeVault.sol](contracts%2FSafeVault.sol) : A vault that manages USDC deposited to the project which may deposit
+- [SafeVault.sol](contracts%2FSafeVault.sol) : A vault that manages stable coins deposited to the project which may
+  deposit
   funds to yield farms and withdraws as a part of withdrawal tx.
 
 ### Addresses
