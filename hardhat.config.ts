@@ -2,6 +2,7 @@ import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-waffle';
 import '@typechain/hardhat';
+import '@xyrusworx/hardhat-solidity-json';
 import { config as dotenvConfig } from 'dotenv';
 import 'hardhat-abi-exporter';
 import 'hardhat-contract-sizer';
@@ -104,7 +105,7 @@ const config: HardhatUserConfig = {
   },
   namedAccounts: {
     deployer: 0,
-    stabilizer: 1,
+    prevault: 1,
     usdc: {
       42161: MAINNET_USDC_ADDRESS,
       421613: TESTNET_USDC_ADDRESS,

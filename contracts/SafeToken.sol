@@ -114,7 +114,8 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         uint256 usdTax = _usdToSpend * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 safeTokensToBuy = (usdToSwapForSafe * 1e6) / price();
         _mint(_msgSender(), safeTokensToBuy);
-        usd.transferFrom(_msgSender(), address(this), _usdToSpend);
+        bool success = usd.transferFrom(_msgSender(), address(this), _usdToSpend);
+        require(success, "SafeToken:transfer-failed");
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
         safeVault.deposit(usdToSwapForSafe + usdTax - paid);
         return usdToSwapForSafe + usdTax;
@@ -128,7 +129,8 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         uint256 usdTax = usdPriceOfTokensToBuy * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdToSpend = usdPriceOfTokensToBuy + usdTax;
         _mint(_msgSender(), _safeTokensToBuy);
-        usd.transferFrom(_msgSender(), address(this), usdToSpend);
+        bool success = usd.transferFrom(_msgSender(), address(this), usdToSpend);
+        require(success, "SafeToken:transfer-failed");
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
         if (usdTax - paid > 0) {
             safeVault.deposit(usdToSpend - paid);

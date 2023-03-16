@@ -4,7 +4,7 @@ pragma solidity >=0.8.17;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Wallets {
-    uint256 constant HUNDRED_PERCENT = 100_000_000;
+    uint256 public constant HUNDRED_PERCENT = 100_000_000;
 
     /// @dev total wallets on the protocol, see Wallets enum
     uint256 public constant WALLETS = 2;
