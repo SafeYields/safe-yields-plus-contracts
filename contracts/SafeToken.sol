@@ -183,6 +183,13 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         admin[guy] = 0;
     }
 
+    function pause() external auth {
+        _pause();
+    }
+
+    function unpause() external auth {
+        _unpause();
+    }
 
     /* ============ View Functions ============ */
 
