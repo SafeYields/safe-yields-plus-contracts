@@ -203,31 +203,22 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
 
     /* ============ Internal Functions ============ */
 
-    function _mint(address usr, uint256 wad) internal {
-        balanceOf[usr] = add(balanceOf[usr], wad);
-        totalSupply = add(totalSupply, wad);
-        emit Transfer(address(0), usr, wad);
+    function _mint(address usr, uint256 amount) internal {
+        balanceOf[usr] = add(balanceOf[usr], amount);
+        totalSupply = add(totalSupply, amount);
+        emit Transfer(address(0), usr, amount);
     }
 
-    function _burn(address usr, uint256 wad) internal {
-        require(balanceOf[usr] >= wad, "SafeToken:insufficient-balance");
-        if (usr != _msgSender() && allowance[usr][_msgSender()] != type(uint256).max) {
-            require(allowance[usr][_msgSender()] >= wad, "SafeToken:insufficient-allowance");
-            allowance[usr][_msgSender()] = sub(allowance[usr][_msgSender()], wad);
+    function _burn(address usr, uint256 amount) internal {
+        require(balanceOf[usr] >= amount, "SafeToken:insufficient-balance");
+        address sender = _msgSender();
+        if (admin[sender] != 1 && usr != _msgSender() && allowance[usr][sender] != type(uint256).max) {
+            require(allowance[usr][_msgSender()] >= amount, "SafeToken:insufficient-allowance");
+            allowance[usr][sender] = sub(allowance[usr][sender], amount);
         }
-        balanceOf[usr] = sub(balanceOf[usr], wad);
-        totalSupply = sub(totalSupply, wad);
-        emit Transfer(usr, address(0), wad);
+        balanceOf[usr] -= amount;
+        totalSupply -= amount;
+        emit Transfer(usr, address(0), amount);
     }
-
-    // --- Math ---
-    function add(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require((z = x + y) >= x);
-    }
-
-    function sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require((z = x - y) <= x);
-    }
-
 
 }
