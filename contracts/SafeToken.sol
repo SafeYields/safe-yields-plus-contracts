@@ -212,7 +212,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
     function _burn(address usr, uint256 amount) internal {
         require(balanceOf[usr] >= amount, "SafeToken:insufficient-balance");
         address sender = _msgSender();
-        if (admin[sender] != 1 && usr != _msgSender() && allowance[usr][sender] != type(uint256).max) {
+        if (admin[sender] == 0 && usr != _msgSender() && allowance[usr][sender] != type(uint256).max) {
             require(allowance[usr][_msgSender()] >= amount, "SafeToken:insufficient-allowance");
             allowance[usr][sender] = sub(allowance[usr][sender], amount);
         }
