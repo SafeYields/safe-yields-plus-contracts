@@ -69,8 +69,8 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         initialize(_usdToken, _safeVault, _wallets, _taxDistributionOnMintAndBurn, _buyTaxPercent, _sellTaxPercent);
     }
 
-    function transfer(address dst, uint256 wad) external returns (bool) {
-        return transferFrom(_msgSender(), dst, wad);
+    function transfer(address dst, uint256 amt) external returns (bool) {
+        return transferFrom(_msgSender(), dst, amt);
     }
 
     function getWallets() external view returns (address[WALLETS] memory) {
@@ -133,8 +133,6 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         }
     }
 
-    function estimateBuyExactAmountOfSafe(uint256 _safeTokensToBuy) public {
-    }
 
     function sellExactAmountOfSafe(uint256 _safeTokensToSell) public nonReentrant {
         uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e6;
@@ -161,9 +159,9 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
             safeVault.deposit(usdTax - paid);
     }
 
-    function approve(address usr, uint256 wad) external returns (bool) {
-        allowance[_msgSender()][usr] = wad;
-        emit Approval(_msgSender(), usr, wad);
+    function approve(address usr, uint256 amt) external returns (bool) {
+        allowance[_msgSender()][usr] = amt;
+        emit Approval(_msgSender(), usr, amt);
         return true;
     }
 
