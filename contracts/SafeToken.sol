@@ -151,7 +151,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
     }
 
     function sellSafeForExactAmountOfUSD(uint256 _usdToPayToUser) public nonReentrant {
-        uint256 usdTax = _usdToGet * SELL_TAX_PERCENT / HUNDRED_PERCENT;
+        uint256 usdTax = _usdToPayToUser * SELL_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdPriceWithTax = _usdToPayToUser + usdTax;
         uint256 safeTokensToBurn = (usdPriceWithTax * 1e6) / price();
         _burn(_msgSender(), safeTokensToBurn);
