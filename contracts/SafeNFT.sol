@@ -125,7 +125,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         //during presale the shares are distributed in USD, then in SAFE
         if (!presale) {
             uint256 usdPrice = price[uint256(_tier)] * _amount;
-            //@dev general ERC-20 compatibility if another token is chosen, USDC reverts on failure anyways
+            //@dev general ERC-20 compatibility if another token is chosen, stable coin  reverts on failure anyways
             bool success = usd.transferFrom(_msgSender(), address(this), usdPrice);
             require(success, "Token transfer failed");
             uint256 toSellForSafe = _getTotalShare(usdPrice, priceDistributionOnMint, referralExists ? referralShareForNFTPurchase : 0);

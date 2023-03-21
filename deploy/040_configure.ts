@@ -14,9 +14,9 @@ const func: DeployFunction = async hre => {
     vault.address,
     nft.address,
   ]) {
-    if ((await tokenContract.admin(address)).isZero()) {
+    if (!(await tokenContract.whitelist(address))) {
       deployInfo(`Authorizing SafeToken for ${address}`);
-      await (await tokenContract.rely(address)).wait();
+      await (await tokenContract.whitelistAdd(address)).wait();
     } else {
       deployInfo(`SafeToken for ${address} already authorized`);
     }
