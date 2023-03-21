@@ -42,6 +42,10 @@ const accounts: HardhatNetworkAccountsUserConfig = [
     privateKey: process.env.STABILIZER_PRIVATE_KEY || '',
     balance,
   },
+  {
+    privateKey: process.env.USER_PRIVATE_KEY || '',
+    balance,
+  },
 ];
 
 const config: HardhatUserConfig = {
@@ -94,7 +98,7 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.LIVENET_MNEMONIC,
         path: "m/44'/60'/0'/0",
         initialIndex: 0,
-        count: 2,
+        count: 3,
       },
     },
     mainnet: {
