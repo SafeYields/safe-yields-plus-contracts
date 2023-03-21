@@ -78,15 +78,20 @@ The contracts are upgradable both ERC-173 and ERC-1967 transparent proxy complia
 
 #### Arbitrum Mainnet
 
-|------------|----------------------------------------------------------------------------------------------------------------------|
-Contract | Address |
-|------------|----------------------------------------------------------------------------------------------------------------------|
-|
-SafeNFT | [0xe2967C90F8cec65Ae12c4bC36c771249C12a2310](https://arbiscan.io/address/0xe2967C90F8cec65Ae12c4bC36c771249C12a2310) |
-|
-SafeToken | [0x519EfB2bEFBd3f00D335dc9DF42BF721D591604f](https://arbiscan.io/address/0x519EfB2bEFBd3f00D335dc9DF42BF721D591604f) |
+|   Contract  | Address    |
+|-----|-----|
+|   SafeNFT  |     [0xe2967C90F8cec65Ae12c4bC36c771249C12a2310](https://arbiscan.io/address/0xe2967C90F8cec65Ae12c4bC36c771249C12a2310) |
+|   SafeToken  |  [0x519EfB2bEFBd3f00D335dc9DF42BF721D591604f](https://arbiscan.io/address/0x519EfB2bEFBd3f00D335dc9DF42BF721D591604f)    |
 
-###
+
+#### Arbitrum Testnet
+
+|   Contract  | Address                                                                                                                   |
+|-----|---------------------------------------------------------------------------------------------------------------------------|
+|   SafeNFT  | [0xAa1D2ca80198470dbCC594CbcA8B7Ea4cBf9a3fE](https://test.arbiscan.io/address/0xAa1D2ca80198470dbCC594CbcA8B7Ea4cBf9a3fE) |
+|   SafeToken  | [0xeeC181F2008b0f719e572000b1F02F120634326C](https://test.arbiscan.io/address/0xeeC181F2008b0f719e572000b1F02F120634326C) |
+
+
 
 ## NFT Presale
 
