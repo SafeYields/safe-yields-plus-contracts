@@ -182,25 +182,25 @@ describe('SafeToken', () => {
     });
   });
 
-  // describe('Price and token mechanics', async () => {
-  //   before(async () => {
-  //     // await deployments.fixture(['SafeVault', 'SafeToken', 'SafeNFT', 'Config']);
-  //     await hardhat.run('fund');
-  //     await hardhat.run('fund', { user: otherUser });
-  //     await hardhat.run('init');
-  //     await hardhat.run('permit');
-  //   });
-  //
-  //   it('should get the price', async () => {
-  //     expect(await safeTokenContract.price()).to.equal(1e6);
-  //   });
-  //
-  //   describe('Price and token mechanics', async () => {
-  //     it('user can get safe with buySafeForExactAmountOfUSD(uint256 _usdToSpend)', async () => {
-  //       await safeTokenContractOtherUser.buySafeForExactAmountOfUSD(100e6);
-  //       expect(await safeTokenContractOtherUser.balanceOf(user)).to.equal(100e6);
-  //       expect(await safeTokenContractOtherUser.totalSupply()).to.equal(100e6);
-  //     });
-  //   });
-  // });
+  describe('Price and token mechanics', async () => {
+    // before(async () => {
+    //   // await deployments.fixture(['SafeVault', 'SafeToken', 'SafeNFT', 'Config']);
+    //   await hardhat.run('fund');
+    //   await hardhat.run('fund', { user: otherUser });
+    //   await hardhat.run('init');
+    //   await hardhat.run('permit');
+    // });
+
+    it('should get the price', async () => {
+      expect(await safeTokenContract.price()).to.equal(1e6);
+    });
+    //
+    // describe('Price and token mechanics', async () => {
+    //   it('user can get safe with buySafeForExactAmountOfUSD(uint256 _usdToSpend)', async () => {
+    //     await safeTokenContractOtherUser.buySafeForExactAmountOfUSD(100e6);
+    //     expect(await safeTokenContractOtherUser.balanceOf(user)).to.equal(100e6);
+    //     expect(await safeTokenContractOtherUser.totalSupply()).to.equal(100e6);
+    //   });
+    // });
+  });
 });
