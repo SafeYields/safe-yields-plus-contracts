@@ -29,7 +29,7 @@ interface ISafeToken is IERC20, IERC20Metadata {
     function sellExactAmountOfSafe(uint256 _safeTokensToSell) external;
 
     /**
-    *   @notice calculate the amount of SAFE needed to swap to get the required USD amount an sell it, SAFE is burned
+    *   @notice calculate the amount of SAFE needed to swap to get the exact USD amount, SAFE is burned USD redeemed from the vault
     *   @param _usdToGet number of tokens to buy, the respective amount of USDC will be deducted from the user, Safe Yield token will be minted
     */
     function sellSafeForExactAmountOfUSD(uint256 _usdToGet) external;

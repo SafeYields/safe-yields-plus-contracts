@@ -12,8 +12,7 @@ contract Wallets {
     address[WALLETS] public wallets;
 
     /// @notice protocol wallets for easy enumeration,
-    /// @dev the order is extremely important once deployed, see configuration scripts
-    // rewards distribution is the balance of SafeNFT,
+    /// @dev the order is extremely important once deployed, see configuration scripts, rewards distribution is the balance of SafeNFT,
     enum WalletsUsed {
         Treasury,
         Management
@@ -33,6 +32,7 @@ contract Wallets {
         }
         return amountPaid;
     }
+
 
     // @notice Distribution percentages, multiplied by 10000, (25 stands for 0.25%)
     function _transferPercent(IERC20 _paymentToken, uint256 _amount, address _receiver, uint256 _percent) internal returns (uint256) {

@@ -80,19 +80,20 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
     function transferFrom(
         address src,
         address dst,
-        uint256 wad
+        uint256 amt
     ) public nonReentrant returns (bool) {
         require(!paused(), "SafeToken:paused");
-        require(src == address(0) || dst == address(0) || admin[src] == 1 || admin[dst] == 1, "SafeToken: transfer-prohibited");
-        require(balanceOf[src] >= wad, "SafeToken:insufficient-balance");
+        require(admin[src] == 1 || admin[dst] == 1, "SafeToken: transfer-prohibited");
+        require(balanceOf[src] >= amt, "SafeToken:insufficient-balance");
         require(!blacklist[src] && !blacklist[dst], "SafeToken:blacklisted");
+        require(dst != address(0) && src != address(0), "SafeToken:zero-address");
         if (src != _msgSender()) {
-            require(allowance[src][_msgSender()] >= wad, "SafeToken:insufficient-allowance");
-            allowance[src][_msgSender()] = sub(allowance[src][_msgSender()], wad);
+            require(allowance[src][_msgSender()] >= amt, "SafeToken:insufficient-allowance");
+            allowance[src][_msgSender()] -= amt;
         }
-        balanceOf[src] = sub(balanceOf[src], wad);
-        balanceOf[dst] = add(balanceOf[dst], wad);
-        emit Transfer(src, dst, wad);
+        balanceOf[src] -= amt;
+        balanceOf[dst] += amt;
+        emit Transfer(src, dst, amt);
         return true;
     }
 
@@ -105,13 +106,10 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         _burn(_user, _amount);
     }
 
-    // for _usdToSpend amount buy safeTokensToBuy SAFE
-    // _usdToSpend = usdToSwapForSafe + usdTax
-    // usdTax = usdToSwapForSafe * buyTax
-    // safeTokensToBuy = usdToSwapForSafe / price();
+
     function buySafeForExactAmountOfUSD(uint256 _usdToSpend) public nonReentrant returns (uint256) {
-        uint256 usdToSwapForSafe = _usdToSpend * (HUNDRED_PERCENT - BUY_TAX_PERCENT) / HUNDRED_PERCENT;
         uint256 usdTax = _usdToSpend * BUY_TAX_PERCENT / HUNDRED_PERCENT;
+        uint256 usdToSwapForSafe = _usdToSpend - usdTax;
         uint256 safeTokensToBuy = (usdToSwapForSafe * 1e6) / price();
         _mint(_msgSender(), safeTokensToBuy);
         bool success = usd.transferFrom(_msgSender(), address(this), _usdToSpend);
@@ -121,9 +119,6 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         return usdToSwapForSafe + usdTax;
     }
 
-    // Buy SAFE for USDC
-    // USDC = SAFE * price() * 100.25%
-    // tax = USDC * 0.25%
     function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public nonReentrant {
         uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e6;
         uint256 usdTax = usdPriceOfTokensToBuy * BUY_TAX_PERCENT / HUNDRED_PERCENT;
@@ -132,7 +127,8 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         bool success = usd.transferFrom(_msgSender(), address(this), usdToSpend);
         require(success, "SafeToken:transfer-failed");
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
-        if (usdTax - paid > 0) {
+        // depositing the rest to the vault, this also saves gas for one SSTORE operation
+        if (usdToSpend - paid > 0) {
             safeVault.deposit(usdToSpend - paid);
         }
     }
@@ -153,12 +149,12 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         }
     }
 
-    function sellSafeForExactAmountOfUSD(uint256 _usdToGet) public nonReentrant {
-        uint256 usdToSpend = _usdToGet * (HUNDRED_PERCENT + SELL_TAX_PERCENT) / HUNDRED_PERCENT;
-        uint256 usdTax = usdToSpend * SELL_TAX_PERCENT / HUNDRED_PERCENT;
-        uint256 safeTokensToSell = (usdToSpend * 1e6) / price();
-        _burn(_msgSender(), safeTokensToSell);
-        safeVault.withdraw(_msgSender(), _usdToGet);
+    function sellSafeForExactAmountOfUSD(uint256 _usdToPayToUser) public nonReentrant {
+        uint256 usdTax = _usdToPayToUser * SELL_TAX_PERCENT / (HUNDRED_PERCENT - SELL_TAX_PERCENT);
+        uint256 usdPriceWithTax = _usdToPayToUser + usdTax;
+        uint256 safeTokensToBurn = (usdPriceWithTax * 1e6) / price();
+        _burn(_msgSender(), safeTokensToBurn);
+        safeVault.withdraw(_msgSender(), _usdToPayToUser);
         safeVault.withdraw(address(this), usdTax);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
         if (usdTax - paid > 0)
@@ -204,8 +200,8 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
     /* ============ Internal Functions ============ */
 
     function _mint(address usr, uint256 amount) internal {
-        balanceOf[usr] = add(balanceOf[usr], amount);
-        totalSupply = add(totalSupply, amount);
+        balanceOf[usr] += amount;
+        totalSupply += amount;
         emit Transfer(address(0), usr, amount);
     }
 
@@ -214,7 +210,7 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         address sender = _msgSender();
         if (admin[sender] == 0 && usr != _msgSender() && allowance[usr][sender] != type(uint256).max) {
             require(allowance[usr][_msgSender()] >= amount, "SafeToken:insufficient-allowance");
-            allowance[usr][sender] = sub(allowance[usr][sender], amount);
+            allowance[usr][sender] -= amount;
         }
         balanceOf[usr] -= amount;
         totalSupply -= amount;
