@@ -8,25 +8,24 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "hardhat-deploy/solc_0.8/proxy/Proxied.sol";
 import "./Wallets.sol";
+import "./Owned.sol";
 
 /// @title  SafeToken
 /// @author crypt0grapher
-/// @notice This contract is used as a token
-contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
+/// @notice This contract is used as a token for the SafeYields protocol
+contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyGuard {
     // @notice ERC20 token data
     string public constant name = "Safe Yields Token";
     string public constant symbol = "SAFE";
     string public constant version = "1";
     uint8 public constant decimals = 6;
 
-    // @notice Total supply of the token
+    /// @notice Total supply of the token, the ratio of totalSupply of the vault by the totalSupply of the Safe Token defines the price of the token
     uint256 public totalSupply;
 
-    // @notice Blacklisted addresses
-    mapping(address => bool) public blacklist;
-
-    // @notice Admins list
-    mapping(address => uint256) public admin;
+    /// @notice Whitelisted addresses for transfers, contains protocol contracts and selected partners
+    /// @dev if not included into the list, transfer is prohibited
+    mapping(address => bool) public whitelist;
 
     // @notice Balances of each user
     mapping(address => uint256) public balanceOf;
@@ -48,14 +47,15 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
     /* ============ Modifiers ============ */
 
     modifier auth() {
-        require(admin[_msgSender()] == 1, "SafeToken:not-authorized");
+        require(_msgSender() == _getOwner(), "SafeToken:not-authorized");
         _;
     }
 
     /* ============ Changing State Functions ============ */
 
+    /// @dev this one is called by the proxy
     function initialize(address _usdToken, address _safeVault, address[WALLETS] memory _wallets, uint256[WALLETS] memory _taxDistributionOnMintAndBurn, uint256 _buyTaxPercent, uint256 _sellTaxPercent) public proxied {
-        admin[_msgSender()] = 1;
+        whitelist[_msgSender()] = true;
         safeVault = ISafeVault(_safeVault);
         usd = IERC20(_usdToken);
         _setWallets(_wallets);
@@ -82,14 +82,15 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         address dst,
         uint256 amt
     ) public nonReentrant returns (bool) {
+        address sender = _msgSender();
+        address admin = _getOwner();
         require(!paused(), "SafeToken:paused");
-        require(admin[src] == 1 || admin[dst] == 1, "SafeToken: transfer-prohibited");
+        require(whitelist[src] == true || whitelist[dst] == true || admin == sender, "SafeToken: transfer-prohibited");
         require(balanceOf[src] >= amt, "SafeToken:insufficient-balance");
-        require(!blacklist[src] && !blacklist[dst], "SafeToken:blacklisted");
         require(dst != address(0) && src != address(0), "SafeToken:zero-address");
-        if (src != _msgSender()) {
-            require(allowance[src][_msgSender()] >= amt, "SafeToken:insufficient-allowance");
-            allowance[src][_msgSender()] -= amt;
+        if (src != sender && sender != admin) {
+            require(allowance[src][sender] >= amt, "SafeToken:insufficient-allowance");
+            allowance[src][sender] -= amt;
         }
         balanceOf[src] -= amt;
         balanceOf[dst] += amt;
@@ -113,10 +114,13 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         uint256 safeTokensToBuy = (usdToSwapForSafe * 1e6) / price();
         _mint(_msgSender(), safeTokensToBuy);
         bool success = usd.transferFrom(_msgSender(), address(this), _usdToSpend);
+        // that's for compatibility, usually if the transfer fails, it reverts but that's not the obligation of ERC20
         require(success, "SafeToken:transfer-failed");
+        // distributing to wallets (if any, currently it's treasury and management)
+        // it's not 100% in total, although could be the case
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
         safeVault.deposit(usdToSwapForSafe + usdTax - paid);
-        return usdToSwapForSafe + usdTax;
+        return safeTokensToBuy;
     }
 
     function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public nonReentrant {
@@ -127,7 +131,6 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         bool success = usd.transferFrom(_msgSender(), address(this), usdToSpend);
         require(success, "SafeToken:transfer-failed");
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
-        // depositing the rest to the vault, this also saves gas for one SSTORE operation
         if (usdToSpend - paid > 0) {
             safeVault.deposit(usdToSpend - paid);
         }
@@ -165,16 +168,12 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
         return true;
     }
 
-    // @notice Grant access
-    // @param guy admin to grant auth
-    function rely(address guy) external auth {
-        admin[guy] = 1;
+    function whitelistAdd(address guy) external auth {
+        whitelist[guy] = true;
     }
 
-    // @notice Deny access
-    // @param guy deny auth for
-    function deny(address guy) external auth {
-        admin[guy] = 0;
+    function whiteListRemove(address guy) external auth {
+        whitelist[guy] = false;
     }
 
     function pause() external auth {
@@ -187,10 +186,12 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
 
     /* ============ View Functions ============ */
 
+    /// @dev this is intentional that not deposited() is used, because the total amount of USD in the vault is used to calculate the price
     function getUsdReserves() public view returns (uint256) {
         return safeVault.totalSupply();
     }
 
+    /// @dev the key is the price is usd reserves, so not only user deposits from safe purchase, but also injections from the NFT purchase and treasury if needed
     function price() public view returns (uint256) {
         return (totalSupply == 0) ? 1e6 : getUsdReserves() * 1e6 / totalSupply;
     }
@@ -206,8 +207,8 @@ contract SafeToken is Wallets, ISafeToken, Proxied, Pausable, ReentrancyGuard {
     function _burn(address usr, uint256 amount) internal {
         require(balanceOf[usr] >= amount, "SafeToken:insufficient-balance");
         address sender = _msgSender();
-        if (admin[sender] == 0 && usr != _msgSender() && allowance[usr][sender] != type(uint256).max) {
-            require(allowance[usr][_msgSender()] >= amount, "SafeToken:insufficient-allowance");
+        if (_getOwner() != sender && usr != sender && allowance[usr][sender] != type(uint256).max) {
+            require(allowance[usr][sender] >= amount, "SafeToken:insufficient-allowance");
             allowance[usr][sender] -= amount;
         }
         balanceOf[usr] -= amount;

@@ -18,19 +18,19 @@ interface ISafeToken is IERC20, IERC20Metadata {
 
     /**
     *   @notice calculate and deduct amount of USD needed to buy given amount of SAFE tokens, SAFE is minted
-    *   @param _safeTokensToBuy number of tokens to buy, the respective amount of USDC will be deducted from the user, Safe Yield token will be minted
+    *   @param _safeTokensToBuy number of tokens to buy, the respective amount of stable coin  will be deducted from the user, Safe Yield token will be minted
     */
     function buyExactAmountOfSafe(uint256 _safeTokensToBuy) external;
 
     /**
     *   @notice sell given amount of SAFE tokens for USD, taxes deducted from the user, SAFE is burned
-    *   @param _safeTokensToSell number of tokens to sell, the respective amount of USDC will be returned from the user, Safe Yield token will be burned
+    *   @param _safeTokensToSell number of tokens to sell, the respective amount of stable coin  will be returned from the user, Safe Yield token will be burned
     */
     function sellExactAmountOfSafe(uint256 _safeTokensToSell) external;
 
     /**
     *   @notice calculate the amount of SAFE needed to swap to get the exact USD amount, SAFE is burned USD redeemed from the vault
-    *   @param _usdToGet number of tokens to buy, the respective amount of USDC will be deducted from the user, Safe Yield token will be minted
+    *   @param _usdToGet number of tokens to buy, the respective amount of stable coin  will be deducted from the user, Safe Yield token will be minted
     */
     function sellSafeForExactAmountOfUSD(uint256 _usdToGet) external;
 
@@ -50,7 +50,7 @@ interface ISafeToken is IERC20, IERC20Metadata {
     function getWallets() external view returns (address[2] memory);
 
     /**
-    *   @notice Usd token contract used in the protocol (USDC for now)
+    *   @notice stable coin token contract used in the protocol
     */
     function usd() external view returns (IERC20);
 
