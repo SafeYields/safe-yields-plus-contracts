@@ -20,7 +20,7 @@ export default task('permit', 'approve SafeToken to spend USDC')
 
     const signer = user ?? deployer;
     info(`Signer ${signer}`);
-    const usdcContract = await ethers.getContractAt(erc20abi, usdc);
+    const usdcContract = await ethers.getContractAt(erc20abi, usdc, signer);
 
     for (const token of [usdcContract]) {
       for (const spenderAddress of [spenderAddress1, spenderAddress2]) {

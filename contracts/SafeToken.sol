@@ -65,7 +65,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
         usd.approve(address(safeVault), type(uint256).max);
     }
 
-    constructor(address _usdToken, address _safeVault, address[WALLETS] memory _wallets, uint256[WALLETS] memory _taxDistributionOnMintAndBurn, uint256 _buyTaxPercent, uint256 _sellTaxPercent)  {
+    constructor(address _usdToken, address _safeVault, address[WALLETS] memory _wallets, uint256[WALLETS] memory _taxDistributionOnMintAndBurn, uint256 _buyTaxPercent, uint256 _sellTaxPercent )  {
         initialize(_usdToken, _safeVault, _wallets, _taxDistributionOnMintAndBurn, _buyTaxPercent, _sellTaxPercent);
     }
 

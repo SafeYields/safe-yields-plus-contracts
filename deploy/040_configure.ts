@@ -1,12 +1,12 @@
 import { PRESALE_START_DATE, WEEK, discountedPresalePriceNFT } from '@config';
-import { SafeNFT, SafeToken } from '@contractTypes/contracts';
-import { deployInfo, displayDiscountedPresalePriceNFT } from '@utils/output.helper';
+import { SafeNFT, SafeToken, SafeVault } from '@contractTypes/contracts';
+import { deployInfo, deploySuccess, displayDiscountedPresalePriceNFT } from '@utils/output.helper';
 import { DeployFunction } from 'hardhat-deploy/types';
 import moment from 'moment';
 
 const func: DeployFunction = async hre => {
   const tokenContract = await hre.ethers.getContract<SafeToken>('SafeToken');
-  const vault = await hre.deployments.get('SafeVault');
+  const vault = await hre.ethers.getContract<SafeVault>('SafeVault');
   const nft = await hre.deployments.get('SafeNFT');
   for (const address of [
     process.env.TREASURY_ADDRESS || hre.ethers.constants.AddressZero,
@@ -21,6 +21,11 @@ const func: DeployFunction = async hre => {
       deployInfo(`SafeToken for ${address} already authorized`);
     }
   }
+
+  deployInfo('Setting SafeToken for SafeVault');
+  await (await vault.setSafeToken(tokenContract.address)).wait();
+  deploySuccess('Done.');
+
   const nftContract = await hre.ethers.getContract<SafeNFT>('SafeNFT');
   if (!(await nftContract.presale())) {
     deployInfo(`Setting presale to true`);

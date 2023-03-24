@@ -14,6 +14,8 @@ contract SafeVault is ISafeVault, Proxied, Owned, ReentrancyGuard {
     IERC20 public usd;
     uint256 public deposited;
     mapping(address => uint256) public balances;
+    /// @notice only Safe Token can withdraw tokens from the vault, when users sell SAFE
+    address public safeToken;
 
     modifier onlyOwner() {
         require(msg.sender == _getOwner(), "SafeVault: only owner");
@@ -26,6 +28,10 @@ contract SafeVault is ISafeVault, Proxied, Owned, ReentrancyGuard {
 
     constructor(address _usd) {
         initialize(_usd);
+    }
+
+    function setSafeToken(address _safeToken) external onlyOwner {
+        safeToken = _safeToken;
     }
 
     /// @dev total supply, used to determine the price of the SAFE token, deposited on SAFE purchase + transferred to the vault
@@ -43,6 +49,8 @@ contract SafeVault is ISafeVault, Proxied, Owned, ReentrancyGuard {
     }
 
     function withdraw(address _receiver, uint256 _amount) external nonReentrant {
+        /// @dev we're allowing withdrawals only to Safe Token, not any user, not even admin is allowed to withdraw from the vault.
+        require(msg.sender == safeToken, "SafeVault: only safe token");
         require(_amount > 0, "SafeVault: amount must be greater than 0");
         require(balances[msg.sender] >= _amount, "SafeVault: user balance is less than amount to withdraw");
         balances[msg.sender] -= _amount;

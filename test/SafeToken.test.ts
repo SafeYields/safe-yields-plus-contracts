@@ -183,24 +183,27 @@ describe('SafeToken', () => {
   });
 
   describe('Price and token mechanics', async () => {
-    // before(async () => {
-    //   // await deployments.fixture(['SafeVault', 'SafeToken', 'SafeNFT', 'Config']);
-    //   await hardhat.run('fund');
-    //   await hardhat.run('fund', { user: otherUser });
-    //   await hardhat.run('init');
-    //   await hardhat.run('permit');
-    // });
+    beforeEach(async () => {
+      // await deployments.fixture(['SafeVault', 'SafeToken', 'SafeNFT', 'Config']);
+      await hardhat.run('fund');
+      await hardhat.run('fund', { user: otherUser });
+      await hardhat.run('init');
+      await hardhat.run('permit');
+      await hardhat.run('permit', { user: otherUser });
+    });
 
     it('should get the price', async () => {
       expect(await safeTokenContract.price()).to.equal(1e6);
     });
-    //
-    // describe('Price and token mechanics', async () => {
-    //   it('user can get safe with buySafeForExactAmountOfUSD(uint256 _usdToSpend)', async () => {
-    //     await safeTokenContractOtherUser.buySafeForExactAmountOfUSD(100e6);
-    //     expect(await safeTokenContractOtherUser.balanceOf(user)).to.equal(100e6);
-    //     expect(await safeTokenContractOtherUser.totalSupply()).to.equal(100e6);
-    //   });
-    // });
+
+    it('user can get buy with buySafeForExactAmountOfUSD(uint256 _usdToSpend)', async () => {
+      await safeTokenContractOtherUser.buySafeForExactAmountOfUSD(10e6);
+      expect(await safeTokenContractOtherUser.balanceOf(otherUser)).to.equal(9975000);
+      expect(await safeTokenContractOtherUser.totalSupply()).to.equal(10975000);
+    });
   });
+
+  // price should go up
+  // only safe can withdraw from the vault
+  // fuzzing tests - buying and selling and price is never less than 1
 });

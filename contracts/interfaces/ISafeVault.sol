@@ -12,7 +12,7 @@ interface ISafeVault {
     // @param _amount amount of stable coin  to deposit
     function deposit(uint256 _amount) external;
 
-    // @notice Withdraw stable coin  from the vault to the receiver from the function caller (msg.sender)
+    // @notice Withdraw stable coin from the vault, supported only for the SafeToken currently on selling SAFE Token
     // @param _user user to send tokens to, withdrawn from the sender
     // @param _amount amount of stable coin  to withdraw
     function withdraw(address _user, uint256 _amount) external;
