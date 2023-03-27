@@ -18,7 +18,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
     string public constant name = "Safe Yields Token";
     string public constant symbol = "SAFE";
     string public constant version = "1";
-    uint8 public constant decimals = 6;
+    uint8 public constant decimals = 18;
 
     /// @notice Total supply of the token, the ratio of totalSupply of the vault by the totalSupply of the Safe Token defines the price of the token
     uint256 public totalSupply;
@@ -112,7 +112,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
         require(_usdToSpend > 0, "SafeToken: amount must be greater than 0");
         uint256 usdTax = _usdToSpend * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdToSwapForSafe = _usdToSpend - usdTax;
-        uint256 safeTokensToBuy = (usdToSwapForSafe * 1e6) / price();
+        uint256 safeTokensToBuy = (usdToSwapForSafe * 1e18) / price();
         _mint(_msgSender(), safeTokensToBuy);
         bool success = usd.transferFrom(_msgSender(), address(this), _usdToSpend);
         // that's for compatibility, usually if the transfer fails, it reverts but that's not the obligation of ERC20
@@ -126,7 +126,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
 
     function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public nonReentrant {
         require(_safeTokensToBuy > 0, "SafeToken: amount must be greater than 0");
-        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e6;
+        uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e18;
         uint256 usdTax = usdPriceOfTokensToBuy * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdToSpend = usdPriceOfTokensToBuy + usdTax;
         _mint(_msgSender(), _safeTokensToBuy);
@@ -141,7 +141,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
 
     function sellExactAmountOfSafe(uint256 _safeTokensToSell) public nonReentrant {
         require(_safeTokensToSell > 0, "SafeToken: amount must be greater than 0");
-        uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e6;
+        uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e18;
         uint256 usdTax = usdPriceOfTokensToSell * SELL_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdToReturn = usdPriceOfTokensToSell - usdTax;
         _burn(_msgSender(), _safeTokensToSell);
@@ -157,7 +157,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
         require(_usdToPayToUser > 0, "SafeToken: amount must be greater than 0");
         uint256 usdTax = _usdToPayToUser * SELL_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdPriceWithTax = _usdToPayToUser + usdTax;
-        uint256 safeTokensToBurn = (usdPriceWithTax * 1e6) / price();
+        uint256 safeTokensToBurn = (usdPriceWithTax * 1e18) / price();
         _burn(_msgSender(), safeTokensToBurn);
         safeVault.remove(_msgSender(), _usdToPayToUser);
         safeVault.remove(address(this), usdTax);
@@ -197,7 +197,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
 
     /// @dev the key is the price is usd reserves, so not only user deposits from safe purchase, but also injections from the NFT purchase and treasury if needed
     function price() public view returns (uint256) {
-        return (totalSupply == 0) ? 1e6 : getUsdReserves() * 1e6 / totalSupply;
+        return (totalSupply == 0) ? 1e18 : getUsdReserves() * 1e18 / totalSupply;
     }
 
     /* ============ Internal Functions ============ */
