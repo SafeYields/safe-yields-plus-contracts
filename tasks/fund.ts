@@ -1,4 +1,4 @@
-import { announce, error, fromWei, info, networkInfo, success, toWei } from '@utils/output.helper';
+import { announce, error, fromBigNumber, info, networkInfo, success, toBigNumber } from '@utils/output.helper';
 import erc20abi from 'abi/erc20abi.json';
 import assert from 'assert';
 import { BigNumber } from 'ethers';
@@ -19,7 +19,7 @@ const beTheWhale = async (hre: HardhatRuntimeEnvironment, accountToFund: string,
   await (
     await signer.sendTransaction({
       to: MAINNET_USDC_WHALE_ADDRESS,
-      value: toWei('1.0'),
+      value: toBigNumber('1.0'),
       gasLimit: 8_000_000,
     })
   ).wait();
@@ -29,11 +29,11 @@ const beTheWhale = async (hre: HardhatRuntimeEnvironment, accountToFund: string,
   for (const token of [usdc]) {
     const contract = new hre.ethers.Contract(token, erc20abi, whaleSigner);
     const balance = await contract.balanceOf(accountToInpersonate);
-    const toTransfer = (amountToTransfer && toWei(amountToTransfer.toString(), 6)) ?? balance;
+    const toTransfer = (amountToTransfer && toBigNumber(amountToTransfer.toString(), 6)) ?? balance;
     info(`token:  ${token}`);
     info(`Whale:  ${MAINNET_USDC_WHALE_ADDRESS}`);
-    info(`Balance:  ${fromWei(balance, 6)} USDC`);
-    info(`Transferring ${fromWei(toTransfer, 6)} USDC to ${accountToFund}`);
+    info(`Balance:  ${fromBigNumber(balance, 6)} USDC`);
+    info(`Transferring ${fromBigNumber(toTransfer, 6)} USDC to ${accountToFund}`);
     assert(BigNumber.from(balance).gte(toTransfer), 'Not enough balance to transfer');
     const connectedContract = contract.connect(whaleSigner);
     await (await connectedContract.transfer(accountToFund, toTransfer)).wait();

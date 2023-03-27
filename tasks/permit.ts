@@ -15,15 +15,16 @@ export default task('permit', 'approve SafeToken to spend USDC')
     const { getNamedAccounts, deployments, ethers } = hre;
     const { deployer, usdc } = await getNamedAccounts();
     await networkInfo(hre, info);
-    const { address: spenderAddress1 } = await deployments.get('SafeToken');
-    const { address: spenderAddress2 } = await deployments.get('SafeNFT');
+    const spenders = (
+      await Promise.all(['SafeToken', 'SafeNFT', 'SafeVault'].map(contractName => deployments.get(contractName)))
+    ).map(deployment => deployment.address);
 
     const signer = user ?? deployer;
     info(`Signer ${signer}`);
-    const usdcContract = await ethers.getContractAt(erc20abi, usdc);
+    const usdcContract = await ethers.getContractAt(erc20abi, usdc, signer);
 
     for (const token of [usdcContract]) {
-      for (const spenderAddress of [spenderAddress1, spenderAddress2]) {
+      for (const spenderAddress of spenders) {
         announce(`Approving spending of USDC`);
         let allowance = await token.allowance(signer, spenderAddress);
         info(`Current allowance is ${sayMaximumForMaxUint(allowance)}`);

@@ -1,5 +1,5 @@
 import { BigNumberish } from '@ethersproject/bignumber';
-import { toWei } from '@utils/output.helper';
+import { toBigNumber } from '@utils/output.helper';
 
 type Distribution = {
   treasury: BigNumberish;
@@ -10,6 +10,7 @@ export type TierPrices = Record<keyof typeof NFTTiers, BigNumberish>;
 
 export const PERCENTAGE_PRECISION_MULTIPLIER = 1_000_000;
 export const percent = (value: number) => value * PERCENTAGE_PRECISION_MULTIPLIER;
+export const fromPercent = (value: number) => value / HUNDRED_PERCENT;
 export const HUNDRED_PERCENT = percent(100);
 
 // export const PRESALE_START_DATE = new Date('March 3, 2023 17:00:00').getTime() / 1000;
@@ -24,7 +25,7 @@ export enum Wallets {
   Management,
 }
 
-export const tax = {
+export const safeTokenTax = {
   buyTaxPercent: percent(0.25),
   sellTaxPercent: percent(0.25),
 };
@@ -60,18 +61,18 @@ export enum NFTTiers {
 
 // export const tierPriceNFT = [toWei(131.25), toWei(262.5), toWei(525), toWei(1050)];
 export const tierPriceNFT: TierPrices = {
-  Tier1: toWei(131.25, 6),
-  Tier2: toWei(262.5, 6),
-  Tier3: toWei(525, 6),
-  Tier4: toWei(1050, 6),
+  Tier1: toBigNumber(131.25, 6),
+  Tier2: toBigNumber(262.5, 6),
+  Tier3: toBigNumber(525, 6),
+  Tier4: toBigNumber(1050, 6),
 };
 
 export const discountedPresalePriceNFT: TierPrices[] = [0.6, 0.7, 0.8, 0.9].map(discount => {
   return {
-    Tier1: toWei(131.25 * discount, 6),
-    Tier2: toWei(262.5 * discount, 6),
-    Tier3: toWei(525 * discount, 6),
-    Tier4: toWei(1050 * discount, 6),
+    Tier1: toBigNumber(131.25 * discount, 6),
+    Tier2: toBigNumber(262.5 * discount, 6),
+    Tier3: toBigNumber(525 * discount, 6),
+    Tier4: toBigNumber(1050 * discount, 6),
   };
 });
 export const tierMaxSupplyNFT = [2000, 1000, 1000, 1000];

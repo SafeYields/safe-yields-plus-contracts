@@ -1,4 +1,4 @@
-import { tax, taxDistributionForSafeToken } from '@config';
+import { safeTokenTax, taxDistributionForSafeToken } from '@config';
 import { deployAndTell } from '@utils/deployFunc';
 import { DeployFunction } from 'hardhat-deploy/types';
 
@@ -21,8 +21,8 @@ const func: DeployFunction = async hre => {
       vault.address,
       [process.env.TREASURY_ADDRESS, process.env.MANAGEMENT_ADDRESS],
       taxDistribution,
-      tax.buyTaxPercent,
-      tax.sellTaxPercent,
+      safeTokenTax.buyTaxPercent,
+      safeTokenTax.sellTaxPercent,
     ],
   });
 };

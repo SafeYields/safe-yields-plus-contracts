@@ -1,7 +1,7 @@
 import { NFTTiers } from '@config';
 import { SafeNFT, SafeVault } from '@contractTypes/contracts';
 import { ISafeToken } from '@contractTypes/contracts/interfaces';
-import { formattedFromWei, fromWei, info, networkInfo } from '@utils/output.helper';
+import { formattedFromBigNumber, fromBigNumber, info, networkInfo } from '@utils/output.helper';
 import erc20abi from 'abi/erc20abi.json';
 import { task } from 'hardhat/config';
 
@@ -40,9 +40,9 @@ task('accounts', 'Get the address and balance information (ETH, SAFE, USDC) for 
           return {
             name: accountName,
             address: accountAddress,
-            ETH: formattedFromWei(await ethers.provider.getBalance(accountAddress), 18),
-            USDC: formattedFromWei(await usdcContract.balanceOf(accountAddress)),
-            SAFE: formattedFromWei(await tokenContract.balanceOf(accountAddress)),
+            ETH: formattedFromBigNumber(await ethers.provider.getBalance(accountAddress), 18),
+            USDC: formattedFromBigNumber(await usdcContract.balanceOf(accountAddress)),
+            SAFE: formattedFromBigNumber(await tokenContract.balanceOf(accountAddress)),
             SafeNFTTier1: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier1)),
             SafeNFTTier2: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier2)),
             SafeNFTTier3: Number(await nftContract.balanceOf(accountAddress, NFTTiers.Tier3)),
@@ -52,6 +52,6 @@ task('accounts', 'Get the address and balance information (ETH, SAFE, USDC) for 
     );
     console.table(table);
 
-    info(`Vault totalSupply: ${fromWei(await vaultContract.totalSupply(), 6)}`);
-    info(`Safe price: ${fromWei(await tokenContract.price(), 6)}`);
+    info(`Vault totalSupply: ${fromBigNumber(await vaultContract.totalSupply(), 6)}`);
+    info(`Safe price: ${fromBigNumber(await tokenContract.price(), 6)}`);
   });
