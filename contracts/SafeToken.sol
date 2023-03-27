@@ -109,6 +109,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
 
 
     function buySafeForExactAmountOfUSD(uint256 _usdToSpend) public nonReentrant returns (uint256) {
+        require(_usdToSpend > 0, "SafeToken: amount must be greater than 0");
         uint256 usdTax = _usdToSpend * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdToSwapForSafe = _usdToSpend - usdTax;
         uint256 safeTokensToBuy = (usdToSwapForSafe * 1e6) / price();
@@ -124,6 +125,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
     }
 
     function buyExactAmountOfSafe(uint256 _safeTokensToBuy) public nonReentrant {
+        require(_safeTokensToBuy > 0, "SafeToken: amount must be greater than 0");
         uint256 usdPriceOfTokensToBuy = _safeTokensToBuy * price() / 1e6;
         uint256 usdTax = usdPriceOfTokensToBuy * BUY_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdToSpend = usdPriceOfTokensToBuy + usdTax;
@@ -138,12 +140,13 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
 
 
     function sellExactAmountOfSafe(uint256 _safeTokensToSell) public nonReentrant {
+        require(_safeTokensToSell > 0, "SafeToken: amount must be greater than 0");
         uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e6;
         uint256 usdTax = usdPriceOfTokensToSell * SELL_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdToReturn = usdPriceOfTokensToSell - usdTax;
         _burn(_msgSender(), _safeTokensToSell);
-        safeVault.withdraw(_msgSender(), usdToReturn);
-        safeVault.withdraw(address(this), usdTax);
+        safeVault.remove(_msgSender(), usdToReturn);
+        safeVault.remove(address(this), usdTax);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
         if (usdTax - paid > 0) {
             safeVault.deposit(usdTax - paid);
@@ -151,12 +154,13 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
     }
 
     function sellSafeForExactAmountOfUSD(uint256 _usdToPayToUser) public nonReentrant {
+        require(_usdToPayToUser > 0, "SafeToken: amount must be greater than 0");
         uint256 usdTax = _usdToPayToUser * SELL_TAX_PERCENT / HUNDRED_PERCENT;
         uint256 usdPriceWithTax = _usdToPayToUser + usdTax;
         uint256 safeTokensToBurn = (usdPriceWithTax * 1e6) / price();
         _burn(_msgSender(), safeTokensToBurn);
-        safeVault.withdraw(_msgSender(), _usdToPayToUser);
-        safeVault.withdraw(address(this), usdTax);
+        safeVault.remove(_msgSender(), _usdToPayToUser);
+        safeVault.remove(address(this), usdTax);
         uint256 paid = _distribute(usd, usdTax, taxDistributionOnMintAndBurn);
         if (usdTax - paid > 0)
             safeVault.deposit(usdTax - paid);
