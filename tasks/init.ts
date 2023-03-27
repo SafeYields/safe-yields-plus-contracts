@@ -1,5 +1,5 @@
 import { SafeToken, SafeVault } from '@contractTypes/contracts';
-import { error, info, networkInfo, success, toWei } from '@utils/output.helper';
+import { error, info, networkInfo, success, toBigNumber } from '@utils/output.helper';
 import erc20abi from 'abi/erc20abi.json';
 import { ethers } from 'ethers';
 import { task } from 'hardhat/config';
@@ -18,7 +18,7 @@ export default task('init', 'funds th vault with 1 usdc and mints 1 safe to set 
     info('Minting 1 SAFE to the vault...');
     const safeVaultSAFEBalance = await safeTokenContract.balanceOf(safeVaultContract.address);
     if (safeVaultSAFEBalance.eq(ethers.constants.Zero)) {
-      (await safeTokenContract.mint(safeVaultContract.address, toWei(1))).wait;
+      (await safeTokenContract.mint(safeVaultContract.address, toBigNumber(1))).wait;
       success('Done.');
     } else error('SAFE already minted to the vault. Skipping minting.');
 
@@ -26,7 +26,7 @@ export default task('init', 'funds th vault with 1 usdc and mints 1 safe to set 
       info('Depositing 1 USDC to the vault...');
       const safeVaultUSDCBalance = await usdcContract.balanceOf(safeVaultContract.address);
       if (safeVaultUSDCBalance.eq(ethers.constants.Zero)) {
-        (await safeVaultContract.deposit(toWei(1, 6))).wait;
+        (await safeVaultContract.deposit(toBigNumber(1, 6))).wait;
         success('Done.');
       } else error('USDC already deposited to the vault. Skipping depositing.');
     }

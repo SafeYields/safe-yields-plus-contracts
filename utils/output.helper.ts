@@ -32,15 +32,17 @@ export const displayDeployResult = (name: string, result: DeployResult) =>
     ? deployWarning(`Re-used existing ${name} at ${result.address}`)
     : deploySuccess(`${name} deployed at ${result.address}`);
 
-export const toWei = (value: number | string | BigNumber, decimals = 6) =>
+export const toBigNumber = (value: number | string | BigNumber, decimals = 6) =>
   ethers.utils.parseUnits(value.toString(), decimals);
-export const fromWei = (value: BigNumberish, decimals = 6) => ethers.utils.formatUnits(value, decimals);
-export const formattedFromWei = (value: BigNumberish, decimals = 6) =>
-  Number(Number(fromWei(value, decimals)).toFixed(5));
+export const fromBigNumber = (value: BigNumberish, decimals = 6) => ethers.utils.formatUnits(value, decimals);
+export const fromBigNumberToFloat = (value: BigNumberish, decimals = 6) =>
+  parseFloat(ethers.utils.formatUnits(value, decimals));
+export const formattedFromBigNumber = (value: BigNumberish, decimals = 6) =>
+  Number(Number(fromBigNumber(value, decimals)).toFixed(5));
 
 export const sayMaximumForMaxUint = (allowance: BigNumber) =>
-  allowance.eq(ethers.constants.MaxUint256) ? chalk.magenta('Maximum') : fromWei(allowance);
+  allowance.eq(ethers.constants.MaxUint256) ? chalk.magenta('Maximum') : fromBigNumber(allowance);
 export const displayDiscountedPresalePriceNFT = (tierPrices: TierPrices[], displayFunc: (message: string) => void) =>
   tierPrices.map((tierPrices, week) =>
-    displayFunc(`Week: ${week} ${Object.values(tierPrices).map(v => fromWei(v).padStart(8, ' '))}`),
+    displayFunc(`Week: ${week} ${Object.values(tierPrices).map(v => fromBigNumber(v).padStart(8, ' '))}`),
   );
