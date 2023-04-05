@@ -57,6 +57,17 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
     address public ambassador;
 
+    // @dev Nitropad 10% presale support
+    bool public nitroPresale;
+    uint256 public nitroPresaleStartDate;
+    uint256 public nitroPresaleDuration;
+    uint256 public nitroPresaleDiscount;
+    address public nitroAddress;
+    // @dev tier => amount
+    mapping(uint256 =>uint256) public soldInNitroPresale;
+
+    event NitroSale(address indexed to, uint256 indexed id, uint256 indexed amount, uint256 price);
+
     /* ============ Modifiers ============ */
     modifier onlyAdmin() {
         require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "ERC1155PresetMinterPauser: must have admin role");
@@ -120,6 +131,14 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     }
 
 
+    function setNitroPresale(bool _nitroPresale, uint256 _nitroPresaleStartDate, uint256 _nitroPresaleDuration, uint256 _nitroPresaleDiscount, address _nitroAddress) public onlyAdmin {
+        nitroPresale = _nitroPresale;
+        nitroPresaleStartDate = _nitroPresaleStartDate;
+        nitroPresaleDuration = _nitroPresaleDuration;
+        nitroPresaleDiscount = _nitroPresaleDiscount;
+        nitroAddress = _nitroAddress;
+    }
+
     function buy(Tiers _tier, uint256 _amount, address _referral) public nonReentrant {
         require(_amount > 0, "E RC1155PresetMinterPauser: amount must be greater than 0");
         ///todo check on totalsupply per tier
@@ -144,13 +163,30 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
                 safeVault.deposit(balance);
             }
         }
+        else if (nitroPresale) {
+            require(block.timestamp >= nitroPresaleStartDate, "Presale has not started yet");
+            require(block.timestamp < nitroPresaleStartDate+nitroPresaleDuration, "Presale has finished");
+            address sender = _msgSender();
+            uint256 supplyLeft =  presaleMaxSupply[uint256(_tier)] * 4 - currentlySoldInPresale[uint256(_tier)];
+            require(_amount <= supplyLeft, "Not enough tokens left for sale");
+            soldInNitroPresale[uint256(_tier)] += _amount;
+            uint256 usdPrice = price[uint256(_tier)] * nitroPresaleDiscount * _amount / HUNDRED_PERCENT;
+            usd.transferFrom(_msgSender(), address(this), usdPrice);
+            _transferPercent(usd, usdPrice, nitroAddress, referralShareForNFTPurchase);
+            _distribute(usd, usdPrice, priceDistributionOnMint);
+            uint256 balance = usd.balanceOf(address(this));
+            if (balance > 0) {
+                usd.transfer(stabilizerWallet, balance);
+            }
+            emit NitroSale(sender, _amount, uint256(_tier), usdPrice);
+        }
         else {
-            require(block.timestamp >= presaleStartDate, "Presale is not started yet");
+            require(block.timestamp >= presaleStartDate, "Presale has not started yet");
             uint256 week = getCurrentPresaleWeek();
             require(week <= WEEKS, "Presale is over");
             uint256[TIERS] memory discountedPrice = presalePrice[week - 1];
             soldPerPresaleWeek[_msgSender()][week][uint256(_tier)] += _amount;
-            currentlySoldInPresale[uint256(_tier)] += _amount;
+            soldInNitroPresale[uint256(_tier)] += _amount;
             if (currentlySoldInPresale[uint256(_tier)] > presaleMaxSupply[uint256(_tier)] * week) {
                 revert("Presale max supply per week reached");
             }
