@@ -12,33 +12,38 @@ export default task('nitro', 'gets and sets presale date to now or other date')
     true,
     types.boolean,
   )
-  .addOptionalParam('date', `presale date to set in format ${timeStampFormat}`, '06.04.2023 00:00:00', types.string)
-  .addOptionalParam('duration', `presale duration in seconds`, 2 * 24 * 3600, types.int)
+  .addOptionalParam('date', `presale date to set in format ${timeStampFormat}`, '08.04.2023 00:00:00', types.string)
+  .addOptionalParam('duration', `presale duration in seconds`, Number.MAX_SAFE_INTEGER, types.int)
   .setAction(async ({ test, date, duration }, hre) => {
     await networkInfo(hre, info);
 
     const nftContract = await hre.ethers.getContract<SafeNFT>('SafeNFT');
-    info(`nitroPresale: ${(await nftContract.nitroPresale()).toString()}`);
-    info(
-      `nitroPresaleStartDate: ${moment
-        .unix((await nftContract.nitroPresaleStartDate()).toNumber())
-        .format(timeStampFormat)}`,
-    );
-    info(`nitroPresaleDuration: ${(await nftContract.nitroPresaleDuration()).toNumber()}`);
-    info(`nitroPresaleDiscount: ${(await nftContract.nitroPresaleDiscount()).toNumber()}`);
+
+    const showInfo = async () => {
+      info(`nitroPresale: ${(await nftContract.nitroPresale()).toString()}`);
+      info(
+        `nitroPresaleStartDate: ${moment
+          .unix((await nftContract.nitroPresaleStartDate()).toNumber())
+          .format(timeStampFormat)}`,
+      );
+      info(`nitroPresaleDuration: ${(await nftContract.nitroPresaleDuration()).toNumber()}`);
+      info(`nitroPresaleDiscount: ${(await nftContract.nitroPresaleDiscount()).toNumber()}`);
+    };
+    await showInfo();
 
     if (!test) {
-      const timeStamp = moment(date, timeStampFormat).unix();
+      const timeStamp = moment.utc(date, timeStampFormat).unix();
       info(`setting presale start to ${date}, which is ${timeStamp}`);
       await (
         await nftContract.setNitroPresale(
           true,
           timeStamp,
           duration,
-          percent(90),
+          percent(95),
           '0x3dF475F4c39912e142955265e8f5c38dAd286FE3',
         )
       ).wait();
+      await showInfo();
     }
     success('Done.');
   });
