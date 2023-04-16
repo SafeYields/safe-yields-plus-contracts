@@ -1,0 +1,9 @@
+{
+  "name": "Safe Yields NFT Tier 4",
+  "description": "Safe Yields NFT Tier 4",
+  "image": "https://safe-yields.s3.amazonaws.com/safe-yields-tier4.png",
+  "properties": {
+    "rarity": "common",
+    "tier": "Four"
+  }
+}
